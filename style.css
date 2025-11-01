@@ -1,0 +1,1677 @@
+@font-face {
+    font-family: 'vazir';
+    src: url('vazir/Vazir-Medium.woff2') format('woff2'),
+         url('vazir/Vazir-Medium.woff') format('woff'),
+         url('vazir/Vazir-Medium.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'vazir';
+    src: url('vazir/Vazir-Bold.woff2') format('woff2'),
+         url('vazir/Vazir-Bold.woff') format('woff'),
+         url('vazir/Vazir-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+i{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bi-code-slash{
+    color: #af52de;
+}
+.bi-globe{
+    color: #76d0eb;
+}
+.bi-camera-video{
+    color: white;
+}
+.bi-image{
+    color: #35ae47;
+}
+.bi-bag{
+    color: #ff9500;
+}
+/* Rename Modal Input Styles */
+#renameChatModal .form-control:focus {
+    background-color: rgba(255,255,255,0.15) !important;
+    border-color: rgb(97, 94, 235) !important;
+    box-shadow: 0 0 0 0.2rem rgba(97, 94, 235, 0.25) !important;
+    color: white !important;
+}
+
+#renameChatModal .form-control::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+/* Settings Modal Styles */
+.settings-modal-content .form-select,
+.form-select {
+    background-color: transparent !important;
+    border: none !important;
+    color: #28a745;
+    cursor: pointer;
+    padding-right: 0.5rem;
+    padding-left: 2rem;
+    direction: rtl;
+    text-align: right;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23999' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 0.75rem center;
+    background-size: 16px 12px;
+    transition: all 0.2s ease;
+}
+
+.settings-modal-content .form-select:hover,
+.form-select:hover {
+    opacity: 0.7;
+    transform: scale(1.02);
+}
+
+.settings-modal-content .form-select:focus,
+.form-select:focus {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.settings-modal-content .form-select option,
+.form-select option {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.settings-modal-content .form-select option:checked,
+.form-select option:checked {
+    color: #28a745;
+}
+
+/* Settings Menu Items */
+.settings-menu-item {
+    border-radius: 6px !important;
+    margin-bottom: 0.5rem !important;
+    border-left: none !important;
+}
+
+.settings-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px !important;
+}
+
+.settings-menu-item.active {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-left: none !important;
+    border-radius: 6px !important;
+    color: inherit !important;
+}
+
+/* Unify settings sidebar background */
+.settings-sidebar {
+    background-color: transparent !important;
+}
+
+/* Action buttons in settings (no background, colored text) */
+.settings-modal-content .btn-primary {
+    background-color: transparent;
+    border: none;
+    color: #28a745;
+    padding: 0.25rem 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.settings-modal-content .btn-primary:hover {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.settings-modal-content .btn-danger {
+    background-color: transparent;
+    border: none;
+    color: #dc3545;
+    padding: 0.25rem 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.settings-modal-content .btn-danger:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+}
+body{
+    background-color: rgb(33, 33, 33);
+    font-family: 'vazir', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #e0e0e0;
+}
+
+/* Dark theme text fixes */
+body:not([data-theme="light"]) .text-dark,
+body:not([data-theme="light"]) .fw-semibold,
+body:not([data-theme="light"]) .fw-bold {
+    color: #e0e0e0 !important;
+}
+
+body:not([data-theme="light"]) .text-muted {
+    color: #999 !important;
+}
+
+/* Package Purchase Styles */
+.plan-btn-container {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.selected-mode-btn {
+    background-color: rgb(97, 94, 235) !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.default-mode-btn {
+    background-color: transparent;
+    color: white;
+    font-weight: bold;
+}
+
+.card-container {
+    max-width: min(800px, 90vw);
+    width: 100%;
+    border-radius: 10px;
+    margin: 0 !important;
+    align-items: center;
+    align-self: center;
+    background-color: transparent;
+    border: 0;
+}
+
+.sub-section {
+    flex: 1;
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 450px;
+}
+
+.mobile-card {
+    margin: 10px;
+}
+
+.feature-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 20px;
+}
+
+.feature-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .card-container > div {
+        flex-direction: column !important;
+    }
+    
+    .sub-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+/* Sidebar */
+.sidebar-drawer {
+    background-color: rgb(23, 23, 23);
+    height: 100vh;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+    position: relative;
+    z-index: 50;
+}
+
+.sidebar-drawer.collapsed {
+    transform: translateX(100%);
+}
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1999;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Desktop Sidebar Styles */
+@media (min-width: 769px) {
+    .sidebar-drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        z-index: 2000;
+    }
+    
+    .main-content {
+        margin-right: 300px;
+    }
+    
+    .sidebar-drawer.collapsed {
+        transform: translateX(100%);
+    }
+    
+    .sidebar-drawer.collapsed ~ .main-content {
+        margin-right: 0;
+    }
+    
+    /* دکمه toggle در دسکتاپ - به صورت پیش‌فرض مخفی */
+    #sidebarToggle {
+        display: none;
+    }
+    
+    /* آیکون سایدبار در navbar */
+    .desktop-sidebar-toggle {
+        display: none !important;
+    }
+    
+    /* نمایش فقط وقتی سایدبار بسته */
+    .sidebar-drawer.collapsed ~ .main-content .desktop-sidebar-toggle {
+        display: block !important;
+    }
+}
+
+/* Mobile Sidebar Styles */
+@media (max-width: 768px) {
+    .sidebar-drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px !important;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 2000;
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .sidebar-drawer.collapsed {
+        transform: translateX(100%);
+    }
+    
+    /* Main content در موبایل */
+    main {
+        width: 100% !important;
+        margin-right: 0 !important;
+    }
+    
+    /* آیکون منو موبایل */
+    .mobile-menu-icon {
+        display: block !important;
+    }
+    
+    /* مخفی کردن آیکون دسکتاپ در موبایل */
+    .desktop-sidebar-toggle {
+        display: none !important;
+    }
+    
+    #sidebarToggle {
+        display: none !important;
+    }
+    .settings-content{
+        width: 100% !important;
+    }
+}
+
+.sidebar-toggle-btn-header {
+    color: white;
+    transition: opacity 0.2s ease;
+}
+
+.sidebar-toggle-btn-header:hover {
+    opacity: 0.7;
+}
+
+.drawer-content {
+    color: #fff;
+}
+
+.drawer-header .btn-link {
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
+.drawer-header .btn-link:hover {
+    opacity: 0.7;
+}
+
+.drawer-header .new-chat-text {
+    font-size: 14px;
+}
+
+.drawer-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+    margin: 4px 8px;
+}
+
+.drawer-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.drawer-item svg {
+    fill: currentColor;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.drawer-item-text {
+    flex: 1;
+    font-size: 14px;
+}
+
+.drawer-scroll {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.drawer-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drawer-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.drawer-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.drawer-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.chat-group-header {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.chat-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+    margin: 2px 8px;
+}
+
+.chat-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-item:hover .chat-actions {
+    opacity: 1 !important;
+}
+
+/* Chat Context Menu */
+.chat-context-menu .list-group-item {
+    transition: background-color 0.2s ease;
+}
+
+.chat-context-menu .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.chat-context-menu .list-group-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.chat-context-menu .list-group-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.chat-item-text {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upgrade-section {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.upgrade-section:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.upgrade-section svg {
+    fill: currentColor;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.clickable {
+    cursor: pointer;
+}
+.models{
+    cursor: pointer;
+}
+.model{
+    font-size: large;
+    font-weight: 600;
+}
+.person-temp{
+    margin-left: 15px;
+}
+
+/* استایل‌های فرم مرکزی */
+.startup-container {
+    max-width: 800px;
+    margin: 240px auto;
+    padding: 20px;
+}
+
+/* Mobile Fixed Positioning */
+@media (max-width: 768px) {
+    /* Remove scroll from body */
+    body {
+        overflow: hidden;
+        height: 100vh;
+    }
+    
+    /* Input Container - Fixed at Bottom */
+    .input-suggestions-container .default-input {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        margin: 0;
+        padding: 15px;
+        background: rgb(33, 33, 33);
+    }
+    
+    body[data-theme="light"] .input-suggestions-container .default-input {
+        background: #ffffff;
+    }
+    
+    /* Hide original fixed chips */
+    .input-suggestions-container .startup-features {
+        display: none !important;
+    }
+    
+    /* Show mobile chips */
+    .mobile-chips {
+        display: block !important;
+    }
+    
+    /* Adjust startup-header spacing */
+    .startup-header {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .startup-header h3 {
+        font-size: 1.5rem;
+    }
+    
+    /* Remove extra padding */
+    .startup-container {
+        padding-bottom: 0;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+    
+    /* Input wrapper adjustments */
+    .input-wrapper {
+        margin-bottom: 0;
+    }
+    
+    /* Chip items mobile size */
+    .chip-item {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+    
+    /* Input textarea mobile size */
+    #chatTextarea {
+        font-size: 1rem !important;
+    }
+}
+
+.startup-header h3 {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.input-wrapper {
+    background-color: rgba(40, 40, 40, 0.8);
+    transition: all 0.3s ease;
+}
+
+
+
+.input-wrapper textarea:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.input-wrapper textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.chip-item {
+    border:1px solid rgba(255, 255, 255, 0.1);
+    color: #9e9e9e;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.chip-item:hover {
+    background-color: rgba(77, 77, 77, 0.571);
+}
+
+.hide-chips {
+    display: none !important;
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0);
+    color: #fff;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0);
+    color: #fff;
+}
+
+/* Model Selection Menu Styles */
+.model-selector {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.model-arrow {
+    transition: transform 0.3s ease;
+}
+
+.model-arrow.rotated {
+    transform: rotate(180deg);
+}
+
+.model-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: rgb(44, 44, 44);
+    border-radius: 12px;
+    min-width: 280px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 2100;
+}
+
+.model-menu.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.model-menu-item {
+    color: white;
+}
+
+.model-item-clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.model-item-clickable:hover {
+    background-color: rgba(97, 94, 235, 0.2);
+}
+
+.model-item-active {
+    background-color: rgba(97, 94, 235, 0.3);
+}
+
+/* Tools Menu Styles */
+.tools-menu {
+    
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    background-color: rgb(44, 44, 44);
+    border-radius: 12px;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 2100;
+}
+
+.tools-menu.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tools-menu .list-group-item {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 12px;
+}
+
+.tools-menu .list-group-item:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.tools-menu .list-group-item:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.tools-menu .list-group-item:hover {
+    background-color: rgba(97, 94, 235, 0.2);
+}
+
+.tools-menu .list-group-item i {
+    font-size: 18px;
+    width: 20px;
+}
+
+/* Search Dialog Styles */
+.search-dialog-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease;
+}
+
+.search-dialog-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.search-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.7);
+    z-index: 2001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.search-dialog.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.search-dialog-card {
+    background-color: rgb(44, 44, 44);
+    border-radius: 16px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    width: 600px;
+    max-width: 90vw;
+}
+
+.search-container {
+    padding: 20px;
+}
+
+.search-input-wrapper {
+    margin-bottom: 20px;
+}
+
+.search-input-wrapper .input-group {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 8px 12px;
+}
+
+.search-input-wrapper .form-control {
+    color: white;
+    font-size: 16px;
+}
+
+.search-input-wrapper .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-input-wrapper .form-control:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.search-empty-state {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Drag & Drop */
+.input-wrapper.drag-active {
+    border-color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.1) !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* نمایش فایل‌ها */
+.files-preview {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.file-item {
+    background-color: rgba(60, 60, 60, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    min-width: 200px;
+    transition: all 0.2s ease;
+}
+
+.file-item:hover {
+    background-color: rgba(70, 70, 70, 0.9);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.file-item .file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-item .file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-item .btn-close {
+    opacity: 0.6;
+    font-size: 0.7rem;
+}
+
+.file-item .btn-close:hover {
+    opacity: 1;
+}
+
+/* Scrollbar برای files-preview */
+.files-preview::-webkit-scrollbar {
+    width: 6px;
+}
+
+.files-preview::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.files-preview::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.files-preview::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* User Menu */
+.user-menu {
+    position: absolute;
+    top: 49px;
+    left: 12px;
+    min-width: 200px;
+    background-color: rgb(40, 40, 40);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 2100;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.user-menu.fade {
+    opacity: 0;
+}
+
+.user-menu.fade.show {
+    opacity: 1;
+}
+
+.user-menu .list-group-item {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    padding: 12px 16px;
+    transition: background-color 0.2s ease;
+    cursor: default;
+}
+
+.user-menu .list-group-item-action {
+    cursor: pointer;
+}
+
+.user-menu .list-group-item-action:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.user-menu .menu-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.user-menu .menu-label {
+    font-size: 14px;
+    flex: 1;
+}
+
+.user-menu-trigger {
+    transition: opacity 0.2s ease;
+}
+
+.user-menu-trigger:hover {
+    opacity: 0.7;
+}
+
+/* Temporary Chat Menu */
+.temp-chat-menu {
+    position: absolute;
+    top: 49px;
+    left: 60px;
+    width: 280px;
+    background-color: rgb(40, 40, 40);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 2100;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.temp-chat-menu.fade {
+    opacity: 0;
+}
+
+.temp-chat-menu.fade.show {
+    opacity: 1;
+}
+
+.temp-chat-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.temp-chat-header h6 {
+    color: #fff;
+    font-size: 16px;
+}
+
+.temp-chat-body {
+    color: #fff;
+}
+
+.temp-chat-description {
+    line-height: 1.5;
+    font-size: 13px;
+}
+
+.temp-chat-learn-more {
+    color: #8ab4f8;
+    font-size: 13px;
+    transition: color 0.2s ease;
+}
+
+.temp-chat-learn-more:hover {
+    color: #aac9ff;
+}
+
+.form-check-input {
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+}
+
+.form-check-input:checked {
+    background-color: #8ab4f8;
+    border-color: #8ab4f8;
+}
+
+.form-check-input:focus {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.temp-chat-trigger {
+    transition: opacity 0.2s ease;
+    padding: 8px;
+}
+
+.temp-chat-trigger:hover {
+    opacity: 0.7;
+}
+
+.temp-chat-trigger.active {
+    color: #8ab4f8;
+}
+
+/* Settings Modal */
+.settings-modal-dialog {
+    max-width: 900px;
+}
+
+.settings-modal-content {
+    background-color: rgb(40, 40, 40);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.settings-modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-modal-header .btn-close {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.settings-modal-body {
+    padding: 0;
+}
+
+.settings-sidebar {
+    background-color: rgba(30, 30, 30, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.settings-sidebar .list-group-item {
+    background-color: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.875rem 1.25rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+.settings-sidebar .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.settings-sidebar .list-group-item.active {
+    background-color: rgba(138, 180, 248, 0.15);
+    color: #8ab4f8;
+    border-left: 3px solid #8ab4f8;
+}
+
+.settings-sidebar .list-group-item i {
+    font-size: 18px;
+    width: 20px;
+}
+
+.settings-content {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.settings-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.settings-item {
+    padding: 0.5rem 0;
+}
+
+.settings-tab {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Scale Animation */
+.modal.fade .modal-dialog {
+    transform: scale(0.7);
+    transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+.settings-modal-content .form-select {
+    background-color: rgba(60, 60, 60, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.settings-modal-content .form-select:focus {
+    background-color: rgba(70, 70, 70, 0.9);
+    border-color: #8ab4f8;
+    box-shadow: 0 0 0 0.25rem rgba(138, 180, 248, 0.25);
+    color: #fff;
+}
+
+.settings-modal-content .form-select option {
+    background-color: rgb(40, 40, 40);
+    color: #fff;
+}
+
+/* Personalization Tab Styles */
+.instruction-section,
+.about-section {
+    background-color: rgba(50, 50, 50, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.personality-chip {
+    background-color: rgba(70, 70, 70, 0.8);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.personality-chip:hover {
+    background-color: rgba(90, 90, 90, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.settings-modal-content textarea.form-control,
+.settings-modal-content input.form-control {
+    background-color: rgba(60, 60, 60, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
+.settings-modal-content textarea.form-control:focus,
+.settings-modal-content input.form-control:focus {
+    background-color: rgba(70, 70, 70, 0.9);
+    border-color: #8ab4f8;
+    box-shadow: 0 0 0 0.25rem rgba(138, 180, 248, 0.25);
+    color: #fff;
+}
+
+.settings-modal-content textarea.form-control::placeholder,
+.settings-modal-content input.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.memory-section ul {
+    list-style-type: disc;
+}
+
+.memory-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+/* Package/Subscription Tab Styles */
+.subscription-container {
+    background-color: rgba(50, 50, 50, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subscription-container h6 {
+    color: #fff;
+}
+
+.payment-history .table {
+    color: #fff;
+    margin-bottom: 0;
+}
+
+.payment-history .table thead {
+    background-color: rgba(30, 30, 30, 0.8);
+}
+
+.payment-history .table thead th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    padding: 0.75rem;
+}
+
+.payment-history .table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.payment-history .table tbody td {
+    padding: 0.75rem;
+}
+
+.payment-history .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.payment-history .table-responsive::-webkit-scrollbar {
+    width: 6px;
+}
+
+.payment-history .table-responsive::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.payment-history .table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.payment-history .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.no-data-message {
+    display: block;
+}
+
+/* پنهان کردن پیام "اطلاعاتی موجود نیست" وقتی داده هست */
+.payment-history tbody:not(:empty) ~ .no-data-message {
+    display: none;
+}
+
+
+/* FAQ Category List */
+.faq-category-item {
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    padding: 1.25rem 1rem !important;
+    transition: all 0.2s ease;
+}
+
+.faq-category-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.faq-category-item:last-child {
+    border-bottom: none !important;
+}
+
+/* FAQ Details Accordion */
+#faqQuestionsAccordion .accordion-item {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#faqQuestionsAccordion .accordion-item:last-child {
+    border-bottom: none;
+}
+
+#faqQuestionsAccordion .accordion-button {
+    background-color: transparent;
+    color: #fff;
+    border: none;
+    padding: 1rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    text-align: right;
+}
+
+#faqQuestionsAccordion .accordion-button:not(.collapsed) {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    box-shadow: none;
+}
+
+#faqQuestionsAccordion .accordion-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#faqQuestionsAccordion .accordion-button:focus {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+#faqQuestionsAccordion .accordion-button::after {
+    content: '+';
+    background-image: none;
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+#faqQuestionsAccordion .accordion-button:not(.collapsed)::after {
+    content: '−';
+    transform: none;
+}
+
+#faqQuestionsAccordion .accordion-body {
+    background-color: rgba(50, 50, 50, 0.3);
+    color: #fff;
+    padding: 1.25rem;
+}
+
+#faqBackButton {
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+#faqBackButton:hover {
+    opacity: 0.7;
+}
+
+/* Light Theme Styles */
+body[data-theme="light"] {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Header در تم روشن */
+body[data-theme="light"] nav {
+    background-color: #ffffff !important;
+}
+
+body[data-theme="light"] .model,
+body[data-theme="light"] .model-selector {
+    color: #000000;
+}
+
+body[data-theme="light"] .sidebar-toggle-btn-header {
+    color: #000000;
+}
+
+body[data-theme="light"] .user-menu-trigger,
+body[data-theme="light"] .temp-chat-trigger {
+    color: #000000;
+}
+
+body[data-theme="light"] .sidebar-toggle-btn-header svg,
+body[data-theme="light"] .model-selector svg {
+    color: #000000;
+    fill: #000000;
+}
+
+body[data-theme="light"] .model-arrow {
+    color: #000000;
+}
+
+body[data-theme="light"] .mobile-menu-icon {
+    color: #000000;
+}
+
+/* Sidebar در تم روشن */
+body[data-theme="light"] .sidebar-drawer {
+    background-color: #f5f5f5;
+}
+
+body[data-theme="light"] .drawer-content {
+    color: #000000;
+}
+
+body[data-theme="light"] .drawer-header .btn-link {
+    color: #000000;
+}
+
+body[data-theme="light"] .drawer-item {
+    color: #000000;
+}
+
+body[data-theme="light"] .drawer-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="light"] .drawer-item svg {
+    color: #000000;
+}
+
+body[data-theme="light"] .chat-group-header {
+    color: #666666;
+}
+
+body[data-theme="light"] .chat-item {
+    color: #000000;
+}
+
+body[data-theme="light"] .chat-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="light"] .chat-item-text {
+    color: #000000;
+}
+
+body[data-theme="light"] .upgrade-section {
+    color: #000000;
+}
+
+body[data-theme="light"] .upgrade-section:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="light"] .upgrade-section svg {
+    color: #000000;
+}
+
+/* فرم مرکزی در تم روشن */
+body[data-theme="light"] .startup-header h3 {
+    color: #000000;
+}
+
+body[data-theme="light"] .input-wrapper {
+    background-color: #e2e2e2;
+    color: #000000;
+}
+
+
+
+body[data-theme="light"] .input-wrapper textarea {
+    color: #000000;
+    background-color: #e2e2e2 !important;
+}
+
+body[data-theme="light"] .input-wrapper textarea::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+   
+}
+
+body[data-theme="light"] .chip-item {
+    background-color: #FFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #5c5c5c;
+}
+
+body[data-theme="light"] .chip-item:hover {
+    background-color: #e0e0e0;
+}
+
+body[data-theme="light"] .btn-outline-light {
+    color: #000000;
+}
+
+body[data-theme="light"] .btn-outline-light:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.3);
+    color: #000000;
+}
+
+/* Context Menu در تم روشن */
+body[data-theme="light"] .chat-context-menu {
+    background: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .chat-context-menu .list-group-item {
+    color: #000000 !important;
+}
+
+body[data-theme="light"] .chat-context-menu .list-group-item:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+body[data-theme="light"] .chat-context-menu .list-group-item.chat-action-delete {
+    color: #dc3545 !important;
+}
+
+/* Model Menu در تم روشن */
+body[data-theme="light"] .model-menu {
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .model-menu-item {
+    color: #000000;
+}
+
+body[data-theme="light"] .model-item-clickable:hover {
+    background-color: rgba(97, 94, 235, 0.1);
+}
+
+/* Tools Menu در تم روشن */
+body[data-theme="light"] .tools-menu {
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .tools-menu .list-group-item {
+    color: #000000;
+}
+
+body[data-theme="light"] .tools-menu .list-group-item:hover {
+    background-color: rgba(97, 94, 235, 0.1);
+}
+
+/* User Menu در تم روشن */
+body[data-theme="light"] .user-menu {
+    background-color: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .user-menu .list-group-item {
+    color: #000000;
+}
+
+body[data-theme="light"] .user-menu .list-group-item-action:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000000;
+}
+
+/* Temp Chat Menu در تم روشن */
+body[data-theme="light"] .temp-chat-menu {
+    background-color: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .temp-chat-header h6,
+body[data-theme="light"] .temp-chat-body {
+    color: #000000;
+}
+
+/* Modal در تم روشن */
+body[data-theme="light"] .modal-content {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+body[data-theme="light"] .modal-header {
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body[data-theme="light"] .modal-footer {
+    border-top-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body[data-theme="light"] .modal-title {
+    color: #000000 !important;
+}
+
+body[data-theme="light"] .modal-body {
+    color: #000000 !important;
+}
+
+/* Settings Modal در تم روشن */
+body[data-theme="light"] .settings-modal-content {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body[data-theme="light"] .settings-sidebar {
+    background-color: #f5f5f5;
+    border-right-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body[data-theme="light"] .settings-sidebar .list-group-item {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+body[data-theme="light"] .settings-sidebar .list-group-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000000;
+}
+
+body[data-theme="light"] .settings-sidebar .list-group-item.active {
+    background-color: rgba(97, 94, 235, 0.1);
+    color: rgb(97, 94, 235);
+    border-left-color: rgb(97, 94, 235);
+}
+
+/* Form Controls در تم روشن */
+body[data-theme="light"] .form-control,
+body[data-theme="light"] .form-select {
+    background-color: #f5f5f5 !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    color: #000000 !important;
+}
+
+body[data-theme="light"] .form-control:focus,
+body[data-theme="light"] .form-select:focus {
+    background-color: #eeeeee !important;
+    border-color: rgb(97, 94, 235) !important;
+    box-shadow: 0 0 0 0.2rem rgba(97, 94, 235, 0.25) !important;
+    color: #000000 !important;
+}
+
+body[data-theme="light"] .form-control::placeholder {
+    color: rgba(0, 0, 0, 0.5) !important;
+}
+
+body[data-theme="light"] .form-select option {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* تنظیمات شخصی‌سازی در تم روشن */
+body[data-theme="light"] .instruction-section,
+body[data-theme="light"] .about-section {
+    background-color: #f5f5f5;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="light"] .personality-chip {
+    background-color: #e0e0e0;
+    color: #000000;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .personality-chip:hover {
+    background-color: #d0d0d0;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* بسته اشتراک در تم روشن */
+body[data-theme="light"] .subscription-container {
+    background-color: #f5f5f5;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* فایل‌ها در تم روشن */
+body[data-theme="light"] .file-item {
+    background-color: #f5f5f5;
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #000000;
+}
+
+body[data-theme="light"] .file-item:hover {
+    background-color: #eeeeee;
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+/* متن‌های کمکی در تم روشن */
+body[data-theme="light"] .text-muted {
+    color: #666666 !important;
+}
+
+body[data-theme="light"] .text-white {
+    color: #000000 !important;
+}
+
+/* Close button در تم روشن */
+body[data-theme="light"] .btn-close {
+    filter: invert(1);
+}
+
+/* Search Dialog در تم روشن */
+body[data-theme="light"] .search-dialog-card {
+    background-color: #ffffff;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .search-input-wrapper .input-group {
+    background-color: #f5f5f5;
+}
+
+body[data-theme="light"] .search-input-wrapper .form-control {
+    color: #000000;
+}
+
+body[data-theme="light"] .search-input-wrapper .form-control::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* Sidebar Overlay در تم روشن */
+body[data-theme="light"] .sidebar-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+}
