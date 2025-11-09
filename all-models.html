@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مدل‌ها</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<style>
+  .nav-pills .nav-link.active, .nav-pills .show>.nav-link{
+    background-color: unset;
+    color: #198754 !important;
+        border-bottom: 2px solid #198754;
+    border-radius: unset;
+  }
+  .nav-link{
+    color: white !important;
+  }
+  .hovering:hover{
+    background-color: #9c9c9c36;
+  }
+  .hover-item-card{
+    transition: all 0.2s;
+  }
+  .hover-item-card:hover{
+    background-color: #4d684341 !important;
+
+  }
+</style>
+
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="text-white d-flex">
+    <!-- Sidebar -->
+    <aside class="sidebar-drawer sticky-top" style="width: 300px; top: 0;">
+      <div class="drawer-content h-100 d-flex flex-column">
+        <div class="drawer-header p-3 pb-1">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex gap-2">
+              <button class="btn btn-link text-white p-1" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill="currentColor" fill-rule="evenodd" d="M8.857 3h6.286c1.084 0 1.958 0 2.666.058.729.06 1.369.185 1.961.487a5 5 0 0 1 2.185 2.185c.302.592.428 1.233.487 1.961.058.708.058 1.582.058 2.666v3.286c0 1.084 0 1.958-.058 2.666-.06.729-.185 1.369-.487 1.961a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C17.1 21 16.227 21 15.143 21H8.857c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.232-.487-1.961C1.5 15.6 1.5 14.727 1.5 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.728.185-1.369.487-1.961A5 5 0 0 1 4.23 3.544c.592-.302 1.233-.428 1.961-.487C6.9 3 7.773 3 8.857 3M6.354 5.051c-.605.05-.953.142-1.216.276a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216-.05.617-.051 1.41-.051 2.546v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h.6V5h-.6c-1.137 0-1.929 0-2.546.051M11.5 5v14h3.6c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.134-.263.226-.611.276-1.216.05-.617.051-1.41.051-2.546v-3.2c0-1.137 0-1.929-.051-2.546-.05-.605-.142-.953-.276-1.216a3 3 0 0 0-1.311-1.311c-.263-.134-.611-.226-1.216-.276C17.029 5.001 16.236 5 15.1 5zM5 8.5a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M5 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1"></path>
+                </svg>
+              </button>
+              <button class="btn btn-link text-white p-1" type="button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+            <button class="btn btn-link text-white p-2 d-flex align-items-center gap-2" type="button">
+              <span class="new-chat-text">گفت‌وگو جدید</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.673 3.913a3.121 3.121 0 1 1 4.414 4.414l-5.937 5.937a5 5 0 0 1-2.828 1.415l-2.18.31a1 1 0 0 1-1.132-1.13l.311-2.18A5 5 0 0 1 9.736 9.85zm3 1.414a1.12 1.12 0 0 0-1.586 0l-5.937 5.937a3 3 0 0 0-.849 1.697l-.123.86.86-.122a3 3 0 0 0 1.698-.849l5.937-5.937a1.12 1.12 0 0 0 0-1.586M11 4A1 1 0 0 1 10 5c-.998 0-1.702.008-2.253.06-.54.052-.862.141-1.109.267a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216C5.001 8.471 5 9.264 5 10.4v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h.6V5h-.6c-1.137 0-1.929 0-2.546.051M11.5 5v14h3.6c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.134-.263.226-.611.276-1.216.05-.617.051-1.41.051-2.546v-3.2c0-1.137 0-1.929-.051-2.546-.05-.605-.142-.953-.276-1.216a3 3 0 0 0-1.311-1.311c-.263-.134-.611-.226-1.216-.276C17.029 5.001 16.236 5 15.1 5zM5 8.5a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M5 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="drawer-scroll flex-grow-1" style="overflow-y: auto;">
+          <div class="drawer-item clickable px-3 py-2 d-flex align-items-center gap-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 4.5C5.50736 4.5 4.5 5.50736 4.5 6.75C4.5 7.99264 5.50736 9 6.75 9C7.99264 9 9 7.99264 9 6.75C9 5.50736 7.99264 4.5 6.75 4.5ZM2.5 6.75C2.5 4.40279 4.40279 2.5 6.75 2.5C9.09721 2.5 11 4.40279 11 6.75C11 9.09721 9.09721 11 6.75 11C4.40279 11 2.5 9.09721 2.5 6.75Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M17.25 4.5C16.0074 4.5 15 5.50736 15 6.75C15 7.99264 16.0074 9 17.25 9C18.4926 9 19.5 7.99264 19.5 6.75C19.5 5.50736 18.4926 4.5 17.25 4.5ZM13 6.75C13 4.40279 14.9028 2.5 17.25 2.5C19.5972 2.5 21.5 4.40279 21.5 6.75C21.5 9.09721 19.5972 11 17.25 11C14.9028 11 13 9.09721 13 6.75Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 15C5.50736 15 4.5 16.0074 4.5 17.25C4.5 18.4926 5.50736 19.5 6.75 19.5C7.99264 19.5 9 18.4926 9 17.25C9 16.0074 7.99264 15 6.75 15ZM2.5 17.25C2.5 14.9028 4.40279 13 6.75 13C9.09721 13 11 14.9028 11 17.25C11 19.5972 9.09721 21.5 6.75 21.5C4.40279 21.5 2.5 19.5972 2.5 17.25Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M17.25 15C16.0074 15 15 16.0074 15 17.25C15 18.4926 16.0074 19.5 17.25 19.5C18.4926 19.5 19.5 18.4926 19.5 17.25C19.5 16.0074 18.4926 15 17.25 15ZM13 17.25C13 14.9028 14.9028 13 17.25 13C19.5972 13 21.5 14.9028 21.5 17.25C21.5 19.5972 19.5972 21.5 17.25 21.5C14.9028 21.5 13 19.5972 13 17.25Z" fill="currentColor"></path>
+            </svg>
+            <div class="drawer-item-text">لیست مدل‌های رسمی</div>
+          </div>
+
+          <div class="drawer-item clickable px-3 py-2 d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 15C8.44771 15 8 15.4477 8 16C8 16.5523 8.44771 17 9 17C9.55229 17 10 16.5523 10 16C10 15.4477 9.55229 15 9 15Z" fill="currentColor"></path>
+              <path d="M14 16C14 15.4477 14.4477 15 15 15C15.5523 15 16 15.4477 16 16C16 16.5523 15.5523 17 15 17C14.4477 17 14 16.5523 14 16Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C10.8954 1 10 1.89543 10 3C10 3.74028 10.4022 4.38663 11 4.73244V7H6C4.34315 7 3 8.34315 3 10V20C3 21.6569 4.34315 23 6 23H18C19.6569 23 21 21.6569 21 20V10C21 8.34315 19.6569 7 18 7H13V4.73244C13.5978 4.38663 14 3.74028 14 3C14 1.89543 13.1046 1 12 1ZM5 10C5 9.44772 5.44772 9 6 9H7.38197L8.82918 11.8944C9.16796 12.572 9.86049 13 10.618 13H13.382C14.1395 13 14.832 12.572 15.1708 11.8944L16.618 9H18C18.5523 9 19 9.44772 19 10V20C19 20.5523 18.5523 21 18 21H6C5.44772 21 5 20.5523 5 20V10ZM13.382 11L14.382 9H9.61803L10.618 11H13.382Z" fill="currentColor"></path>
+            </svg>
+            <div class="drawer-item-text">
+              جستجو در دستیار‌ها
+              <div class="text-muted small">برای ساخت دستیار بسته‌ی خود را ارتقا دهید</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-footer mt-auto">
+          <hr class="my-2" style="border-color: rgba(255,255,255,0.1);">
+          <a href="purchase.html" class="text-decoration-none">
+            <div class="upgrade-section px-3 py-2 d-flex align-items-center gap-2 clickable">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M6.394 4.444c.188-.592 1.024-.592 1.212 0C8.4 8.9 9.1 9.6 13.556 10.394c.592.188.592 1.024 0 1.212C9.1 12.4 8.4 13.1 7.606 17.556c-.188.592-1.024.592-1.212 0C5.6 13.1 4.9 12.4.444 11.606c-.592-.188-.592-1.024 0-1.212C4.9 9.6 5.6 8.9 6.394 4.444m8.716 9.841a.41.41 0 0 1 .78 0c.51 2.865.96 3.315 3.825 3.826.38.12.38.658 0 .778-2.865.511-3.315.961-3.826 3.826a.408.408 0 0 1-.778 0c-.511-2.865-.961-3.315-3.826-3.826a.408.408 0 0 1 0-.778c2.865-.511 3.315-.961 3.826-3.826Zm2.457-12.968a.454.454 0 0 1 .866 0C19 4.5 19.5 5 22.683 5.567a.454.454 0 0 1 0 .866C19.5 7 19 7.5 18.433 10.683a.454.454 0 0 1-.866 0C17 7.5 16.5 7 13.317 6.433a.454.454 0 0 1 0-.866C16.5 5 17 4.5 17.567 1.317"></path>
+              </svg>
+              <div>
+                <div class="fw-bold">ارتقا بسته</div>
+                <div class="text-muted small">تولید عکس، رفع محدودیت‌ها و ...</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="w-100 main-content">
+      <!-- Header -->
+      <nav class="nav p-3 d-flex justify-content-between w-100 sticky-top" style="background-color: rgb(33, 33, 33); top: 0; z-index: 100;">
+        <div class="models d-flex gap-3 align-items-center position-relative">
+          <div class="mobile-menu-icon" id="mobileMenuIcon" style="cursor: pointer; display: none;">
+            <i class="bi bi-list" style="font-size: 28px;"></i>
+          </div>
+          <div class="desktop-sidebar-toggle" id="desktopSidebarToggle" style="cursor: pointer; display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path fill="currentColor" fill-rule="evenodd" d="M8.857 3h6.286c1.084 0 1.958 0 2.666.058.729.06 1.369.185 1.961.487a5 5 0 0 1 2.185 2.185c.302.592.428 1.233.487 1.961.058.708.058 1.582.058 2.666v3.286c0 1.084 0 1.958-.058 2.666-.06.729-.185 1.369-.487 1.961a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C17.1 21 16.227 21 15.143 21H8.857c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.232-.487-1.961C1.5 15.6 1.5 14.727 1.5 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.728.185-1.369.487-1.961A5 5 0 0 1 4.23 3.544c.592-.302 1.233-.428 1.961-.487C6.9 3 7.773 3 8.857 3M6.354 5.051c-.605.05-.953.142-1.216.276a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216-.05.617-.051 1.41-.051 2.546v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h.6V5h-.6c-1.137 0-1.929 0-2.546.051M11.5 5v14h3.6c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.134-.263.226-.611.276-1.216.05-.617.051-1.41.051-2.546v-3.2c0-1.137 0-1.929-.051-2.546-.05-.605-.142-.953-.276-1.216a3 3 0 0 0-1.311-1.311c-.263-.134-.611-.226-1.216-.276C17.029 5.001 16.236 5 15.1 5zM5 8.5a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M5 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1"></path>
+            </svg>
+          </div>
+          <h5 class="mb-0">مدل‌ها</h5>
+        </div>
+
+        <div class="person-temp d-flex gap-3 flex-row-reverse position-relative">
+          <i class="bi bi-file-person-fill user-menu-trigger" style="cursor: pointer;"></i>
+        </div>
+      </nav>
+
+      <div class="container py-3">
+        <!-- Tabs scroll container (sticky under header) -->
+        <div class="overflow-auto position-sticky" id="tabsWrap" style="top: 0; z-index: 99; background-color: rgb(33, 33, 33);">
+          <ul class="nav nav-pills flex-nowrap gap-2 py-2" id="modelsTabs" style="white-space: nowrap;">
+            <li class="nav-item"><a class="nav-link active category-tab" href="#popular">پر استفاده‌ترین‌ها</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#image">تولید تصویر</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#video">تولید ویدئو</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#music">تولید موسیقی</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#openai">OpenAI</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#claude">Claude</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#gemini">Gemini</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#deepseek">DeepSeek</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#grok">Grok</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#reasoning">مدل‌های استدلالی</a></li>
+            <li class="nav-item"><a class="nav-link category-tab" href="#others">مدل‌های دیگر</a></li>
+          </ul>
+        </div>
+
+        <!-- Sections -->
+        <div class="mt-4" id="sectionsContainer">
+          <section id="popular" class="pt-4 pb-5 ">
+            <div class="mb-2">
+              <h5 class="mb-1">پر استفاده‌ترین‌ها</h5>
+              <p class="text-muted mb-0">مدل‌های محبوب و پر استفاده در گپ جی‌پی‌تی</p>
+            </div>
+            <!-- محتوا به صورت داینامیک تزریق می‌شود -->
+          </section>
+          <section id="image" class="pt-4 pb-5 ">
+            <h6 class="mb-3">تولید تصویر</h6>
+            <p class="text-muted">مدل‌های تولید تصویر.</p>
+          </section>
+          <section id="video" class="pt-4 pb-5 ">
+            <h6 class="mb-3">تولید ویدئو</h6>
+            <p class="text-muted">مدل‌های تولید ویدئو.</p>
+          </section>
+          <section id="music" class="pt-4 pb-5 ">
+            <h6 class="mb-3">تولید موسیقی</h6>
+            <p class="text-muted">مدل‌های تولید موسیقی.</p>
+          </section>
+          <section id="openai" class="pt-4 pb-5 ">
+            <h6 class="mb-3">OpenAI</h6>
+            <p class="text-muted">مدل‌های OpenAI.</p>
+          </section>
+          <section id="claude" class="pt-4 pb-5 ">
+            <h6 class="mb-3">Claude</h6>
+            <p class="text-muted">مدل‌های Claude.</p>
+          </section>
+          <section id="gemini" class="pt-4 pb-5 ">
+            <h6 class="mb-3">Gemini</h6>
+            <p class="text-muted">مدل‌های Gemini.</p>
+          </section>
+          <section id="deepseek" class="pt-4 pb-5 ">
+            <h6 class="mb-3">DeepSeek</h6>
+            <p class="text-muted">مدل‌های DeepSeek.</p>
+          </section>
+          <section id="grok" class="pt-4 pb-5 ">
+            <h6 class="mb-3">Grok</h6>
+            <p class="text-muted">مدل‌های Grok.</p>
+          </section>
+          <section id="reasoning" class="pt-4 pb-5 ">
+            <h6 class="mb-3">مدل‌های استدلالی</h6>
+            <p class="text-muted">مدل‌های استدلالی.</p>
+          </section>
+          <section id="others" class="pt-4 pb-5 ">
+            <h6 class="mb-3">مدل‌های دیگر</h6>
+            <p class="text-muted">سایر مدل‌ها.</p>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // اسکرول نرم و اکتیو شدن تب‌ها با درنظر گرفتن هدر چسبان
+    $(function(){
+      // داده‌های مدل‌ها به تفکیک دسته
+const modelsData = {
+  popular: {
+    title: 'پر استفاده‌ترین‌ها',
+    subtitle: 'مدل‌های محبوب و پر استفاده در گپ جی‌پی‌تی',
+    items: [
+      { img: '/model_icons/gapgpt-purple-icon-v3.png', name: 'GapGPT-5', desc: 'مدل gpt-5 با دسترسی به اینترنت و تولید عکس', link: '#', pro: false },
+      { img: '/model_icons/gapgpt-icon-v3.png', name: 'GapGPT-4.1', desc: 'مدل gpt-4.1 با دسترسی به اینترنت و تولید عکس', link: '#', pro: false },
+      { img: '/model_icons/sonnet.jpeg', name: 'Claude 4.5 Sonnet', desc: 'نسخه جدید Sonnet با بهبود دقت و سرعت از Anthropic', link: '#', pro: false },
+      { img: '/model_icons/qwen.jpeg', name: 'Qwen 3', desc: 'مدل Qwen3 235B از شرکت Alibaba', link: '#', pro: false },
+      { img: '/model_icons/deepseek.jpeg', name: 'DeepSeek', desc: 'جدید‌ترین مدل DeepSeek V3 و R1', link: '#', pro: false },
+      { img: '/model_icons/xai.png', name: 'Grok 4', desc: 'جدیدترین مدل از XAI', link: '#', pro: false },
+      { img: '/model_icons/o3.png', name: 'o3', desc: 'جدیدترین مدل از سری o3', link: '#', pro: true },
+      { img: '/model_icons/gemini-pro.png', name: 'Gemini 2.5 pro', desc: 'جدید ترین مدل pro 06-05 از گوگل', link: '#', pro: false },
+      { img: '/model_icons/gapgpt-purple-icon-v3.png', name: 'GapGPT-5 Lite', desc: 'دسترسی رایگان به GPT-5 و GPT-5-mini', link: '#', pro: false },
+    ]
+  },
+
+  image: {
+    title: 'تولید تصویر',
+    subtitle: 'مدل‌های هوش مصنوعی برای تولید و ویرایش تصاویر',
+    items: [
+      { img: '/model_icons/nano-banana.png', name: 'Nano Banana', desc: 'تولید تصاویر باکیفیت با مدل Gemini 2.5 Flash Image', link: '#', pro: false },
+      { img: '/model_icons/gpt-image.png', name: 'GPT Image 1', desc: 'تولید عکس‌های دقیق و با کیفیت بالا', link: '#', pro: false },
+      { img: '/model_icons/flux.png', name: 'Flux Schnell', desc: 'نسخه سریع‌تر Flux', link: '#', pro: true },
+      { img: '/model_icons/midjourney.png', name: 'Midjourney', desc: 'تولید عکس‌های خلاقانه', link: '#', pro: true },
+      { img: '/model_icons/dalle.png', name: 'DALLE-3', desc: 'مدل تولید عکس از OpenAI', link: '#', pro: true },
+      { img: '/model_icons/flux-pro.png', name: 'Flux Pro Kontext', desc: 'مدل مناسب ویرایش تصاویر و تولید جزئیات بالا', link: '#', pro: true },
+      { img: '/model_icons/imagen.png', name: 'Imagen 4', desc: 'پیشرفته‌ترین مدل تولید تصویر گوگل', link: '#', pro: true },
+    ]
+  },
+
+  video: {
+    title: 'تولید ویدئو',
+    subtitle: 'مدل‌های نوین برای تولید و ویرایش ویدئو',
+    items: [
+      { img: '/model_icons/veo.png', name: 'Veo 3.1 Fast', desc: 'قوی‌ترین مدل تولید ویدئو همراه صدا از گوگل', link: '#', pro: true },
+      { img: '/model_icons/veo.png', name: 'Veo 3.1', desc: 'قوی‌ترین مدل تولید ویدئو از گوگل (آزمایشی)', link: '#', pro: true },
+      { img: '/model_icons/sora.png', name: 'Sora 2', desc: 'جدیدترین مدل تولید ویدئو از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/kling.png', name: 'Kling v2.1 standard', desc: 'مناسب تولید ویدئو', link: '#', pro: false },
+    ]
+  },
+
+  music: {
+    title: 'تولید موسیقی',
+    subtitle: 'ساخت آهنگ، متن ترانه و کاور با Suno',
+    items: [
+      { img: '/model_icons/suno.png', name: 'Suno Music', desc: 'ساخت موسیقی با کاور و متن ترانه', link: '#', pro: true },
+    ]
+  },
+
+  openai: {
+    title: 'OpenAI',
+    subtitle: 'مدل‌های GPT، O-series و DALL-E از OpenAI',
+    items: [
+      { img: '/model_icons/gapgpt-purple-icon-v3.png', name: 'GapGPT-5', desc: 'مدل gpt-5 با دسترسی به اینترنت و تولید عکس', link: '#', pro: false },
+      { img: '/model_icons/gapgpt-icon-v3.png', name: 'GapGPT-4.1', desc: 'مدل gpt-4.1 با دسترسی به اینترنت و تولید عکس', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-5', desc: 'جدیدترین مدل از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-5 Codex', desc: 'نسخه تخصصی GPT-5 برای برنامه‌نویسی و رفع اشکال کد', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-5 mini', desc: 'مدل gpt-5 mini از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-5 nano', desc: 'مدل gpt-5 nano از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-5 Pro', desc: 'نسخه پیشرفته GPT-5 برای کاربران حرفه‌ای', link: '#', pro: true },
+      { img: '/model_icons/gapgpt-purple-icon-v3.png', name: 'GapGPT-5 Lite', desc: 'دسترسی رایگان به GPT-5 و GPT-5-mini', link: '#', pro: false },
+      { img: '/model_icons/o3.png', name: 'o3', desc: 'جدیدترین مدل از سری o3', link: '#', pro: true },
+      { img: '/model_icons/o3.png', name: 'o3 pro', desc: 'مدل o3 pro با استدلال پیشرفته', link: '#', pro: true },
+      { img: '/model_icons/o4.png', name: 'o4-mini', desc: 'قوی‌ترین مدل از OpenAI برای استنتاج و برنامه‌نویسی', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-4o', desc: 'مدل gpt-4o از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT Image 1', desc: 'تولید عکس‌های دقیق و با کیفیت بالا', link: '#', pro: false },
+      { img: '/model_icons/o3.png', name: 'o3-mini', desc: 'مدل سبک استنتاجی از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/o3.png', name: 'o3-mini-high', desc: 'مدل o3-mini با استنتاج بیشتر', link: '#', pro: false },
+      { img: '/model_icons/o4.png', name: 'o4-mini-high', desc: 'نسخه o4-mini با استنتاج بیشتر و دقت بالاتر', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-4.1', desc: 'مدل gpt-4.1 از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-4.1 mini', desc: 'مدل gpt-4.1 mini از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-4.1 nano', desc: 'مدل gpt-4.1 nano از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/o1.png', name: 'o1', desc: 'نسخه اول مدل‌های استنتاجی از OpenAI', link: '#', pro: true },
+      { img: '/model_icons/o1.png', name: 'o1-mini', desc: 'نسخه اول مدل‌های سبک استنتاجی از OpenAI', link: '#', pro: true },
+      { img: '/model_icons/dalle.png', name: 'DALLE-3', desc: 'مدل تولید عکس از OpenAI', link: '#', pro: true },
+      { img: '/model_icons/sora.png', name: 'Sora 2', desc: 'جدیدترین مدل تولید ویدئو از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/openai.png', name: 'GPT-4o Mini', desc: 'مدل سریع gpt 4o mini از OpenAI', link: '#', pro: false },
+    ]
+  },
+
+  claude: {
+    title: 'Claude',
+    subtitle: 'مدل‌های Claude (Opus, Sonnet, Haiku)',
+    items: [
+      { img: '/model_icons/sonnet.jpeg', name: 'Claude 4.5 Sonnet', desc: 'نسخه جدید Sonnet با بهبود دقت و سرعت از Anthropic', link: '#', pro: false },
+      { img: '/model_icons/opus.png', name: 'Claude 4.1 Opus', desc: 'جدیدترین مدل Claude 4.1 Opus از Anthropic', link: '#', pro: true },
+      { img: '/model_icons/haiku.png', name: 'Claude 3.5 Haiku', desc: 'بروزترین مدل سبک از Anthropic', link: '#', pro: false },
+    ]
+  },
+
+  gemini: {
+    title: 'Gemini',
+    subtitle: 'مدل‌های Gemini و سایر مدل‌های Google',
+    items: [
+      { img: '/model_icons/gemini-pro.png', name: 'Gemini 2.5 pro', desc: 'جدید ترین مدل pro 06-05 از گوگل', link: '#', pro: false },
+      { img: '/model_icons/gemini-flash.png', name: 'Gemini 2.5 Flash', desc: 'جدیدترنی مدل سبک از گوگل', link: '#', pro: false },
+      { img: '/model_icons/nano-banana.png', name: 'Nano Banana', desc: 'تولید تصاویر باکیفیت با مدل Gemini 2.5 Flash Image', link: '#', pro: false },
+      { img: '/model_icons/veo.png', name: 'Veo 3.1', desc: 'قوی‌ترین مدل تولید ویدئو از گوگل (آزمایشی)', link: '#', pro: true },
+      { img: '/model_icons/veo.png', name: 'Veo 3.1 Fast', desc: 'قوی‌ترین مدل تولید ویدئو همراه صدا از گوگل', link: '#', pro: true },
+      { img: '/model_icons/imagen.png', name: 'Imagen 4', desc: 'پیشرفته‌ترین مدل تولید تصویر گوگل', link: '#', pro: true },
+    ]
+  },
+
+  deepseek: {
+    title: 'DeepSeek',
+    subtitle: 'مدل‌های V3 و R1 از DeepSeek',
+    items: [
+      { img: '/model_icons/deepseek.jpeg', name: 'DeepSeek', desc: 'جدید‌ترین مدل DeepSeek V3 و R1', link: '#', pro: false },
+      { img: '/model_icons/deepseek-r1.png', name: 'DeepSeek R1', desc: 'جدیدترین مدل از DeepSeek مناسب استنتاج', link: '#', pro: false },
+    ]
+  },
+
+  grok: {
+    title: 'Grok',
+    subtitle: 'مدل‌های Grok از شرکت XAI',
+    items: [
+      { img: '/model_icons/xai.png', name: 'Grok 4', desc: 'جدیدترین مدل از XAI', link: '#', pro: false },
+      { img: '/model_icons/xai.png', name: 'Grok 3', desc: 'مدل Grok 3 از XAI', link: '#', pro: false },
+      { img: '/model_icons/xai.png', name: 'Grok 4 Fast', desc: 'نسخه سریع‌تر Grok 4 برای پاسخ‌های کم‌تاخیر', link: '#', pro: false },
+      { img: '/model_icons/xai.png', name: 'Grok 3 Thinking', desc: 'جدیدترین مدل استنتاج از XAI', link: '#', pro: true },
+    ]
+  },
+
+  reasoning: {
+    title: 'مدل‌های استدلالی',
+    subtitle: 'مدل‌های پیشرفته برای حل مسائل پیچیده و استدلال',
+    items: [
+      { img: '/model_icons/gemini-pro.png', name: 'Gemini 2.5 pro', desc: 'جدید ترین مدل pro 06-05 از گوگل', link: '#', pro: true },
+      { img: '/model_icons/o3.png', name: 'o3', desc: 'جدیدترین مدل از سری o3', link: '#', pro: true },
+      { img: '/model_icons/o3.png', name: 'o3 pro', desc: 'مدل o3 pro با استدلال پیشرفته', link: '#', pro: true },
+      { img: '/model_icons/o4.png', name: 'o4-mini', desc: 'قوی‌ترین مدل از OpenAI برای استنتاج و برنامه‌نویسی', link: '#', pro: false },
+      { img: '/model_icons/o3.png', name: 'o3-mini', desc: 'مدل سبک استنتاجی از OpenAI', link: '#', pro: false },
+      { img: '/model_icons/o3.png', name: 'o3-mini-high', desc: 'مدل o3-mini با استنتاج بیشتر', link: '#', pro: false },
+      { img: '/model_icons/o4.png', name: 'o4-mini-high', desc: 'نسخه o4-mini با استنتاج بیشتر و دقت بالاتر', link: '#', pro: false },
+      { img: '/model_icons/xai.png', name: 'Grok 3 Thinking', desc: 'جدیدترین مدل استنتاج از XAI', link: '#', pro: true },
+      { img: '/model_icons/deepseek-r1.png', name: 'DeepSeek R1', desc: 'جدیدترین مدل از DeepSeek مناسب استنتاج', link: '#', pro: false },
+      { img: '/model_icons/xai.png', name: 'Grok 4 Fast', desc: 'نسخه سریع‌تر Grok 4 برای پاسخ‌های کم‌تاخیر', link: '#', pro: false },
+      { img: '/model_icons/o1.png', name: 'o1', desc: 'نسخه اول مدل‌های استنتاجی از OpenAI', link: '#', pro: true },
+      { img: '/model_icons/o1.png', name: 'o1-mini', desc: 'نسخه اول مدل‌های سبک استنتاجی از OpenAI', link: '#', pro: true },
+    ]
+  },
+
+  others: {
+    title: 'مدل‌های دیگر',
+    subtitle: 'مدل‌های دیگر',
+    items: [
+      { img: '/model_icons/qwen.jpeg', name: 'Qwen 3', desc: 'مدل Qwen3 235B از شرکت Alibaba', link: '#', pro: false },
+      { img: '/model_icons/qwen.jpeg', name: 'Qwen 3 Coder', desc: 'مدل Qwen3 Coder 480B از شرکت Alibaba', link: '#', pro: false },
+    ]
+  }
+};
+
+
+      // رندر یک کارت مدل
+      function renderCard(item){
+        const proBadge = item.pro ? (
+          '<span class="badge text-dark position-absolute top-0 start-0 m-2" style="background-color: rgba(33,33,33)">پرو</span>'
+        ) : '';
+        return (
+          '<div class="col-12 col-sm-6 col-md-4 col-lg-3">\
+            <div class="card h-100 d-flex position-relative" style="background-color: rgba(46,46,46); border-radius: 15px; overflow:hidden">' +
+              proBadge +
+              '<div class="card-body p-2">\
+                <div class="d-flex align-items-start gap-2">\
+                  <div class="flex-shrink-0" style="font-size: 40px; margin-right: -3px;">\
+                    <div class="rounded overflow-hidden d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">\
+                      <img src="' + (item.img || '') + '" alt="' + (item.name || '') + '" class="img-fluid" style="width: 40px; height: 40px; object-fit: cover;">\
+                    </div>\
+                  </div>\
+                  <div class="flex-grow-1">\
+                    <div class="fw-semibold small mb-1">' + (item.name || '') + '</div>\
+                    <div class="small text-muted" style="direction: rtl;">' + (item.desc || '') + '</div>\
+                  </div>\
+                </div>\
+              </div>\
+              <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-2 mt-2 hover-item-card" style="color: #32946a ";>\
+                <a class="btn w-100 d-flex align-items-center justify-content-center gap-2" style="color: #32946a "; href="' + (item.link || '#') + '">\
+                  <i class="bi bi-arrow-right"></i>\
+                  <span>انتخاب</span>\
+                </a>\
+              </div>\
+            </div>\
+          </div>'
+        );
+      }
+
+      // رندر یک سکشن با منطق نمایش بیشتر
+      function renderSection(sectionId, data){
+        const $section = $('#' + sectionId);
+        if (!$section.length) return;
+        $section.empty();
+        const headerHtml = (
+          '<div class="mb-2">\
+            <h5 class="mb-1">' + data.title + '</h5>\
+            <p class="text-muted mb-0">' + (data.subtitle || '') + '</p>\
+          </div>'
+        );
+        $section.append(headerHtml);
+
+        const items = data.items || [];
+        const $row = $('<div class="row g-3 mb-3"></div>');
+        const visibleCount = Math.min(8, items.length);
+
+        // آیتم‌های اولیه
+        for (let i = 0; i < visibleCount; i++) {
+          $row.append(renderCard(items[i]));
+        }
+
+        // آیتم‌های مخفی (اگر وجود دارد)
+        if (items.length > 8) {
+          const $extraWrapper = $('<div class="w-100 d-none" data-role="extra"></div>');
+          const $extraRow = $('<div class="row g-3 mt-0"></div>');
+          for (let i = 8; i < items.length; i++) {
+            $extraRow.append(renderCard(items[i]));
+          }
+          $extraWrapper.append($extraRow);
+          $row.append($extraWrapper);
+        }
+
+        $section.append($row);
+
+        // دکمه نمایش بیشتر
+        if (items.length > 8) {
+          const $btnWrap = $('<div class="text-center mt-3"></div>');
+          const $btn = $('<button class="btn btn-outline-primary rounded-pill px-4 hovering" type="button" style="color: #32946a; border-color: #32946a;">نمایش بیشتر</button>');
+          $btn.on('click', function(){
+            const $extra = $section.find('[data-role="extra"]');
+            const isHidden = $extra.hasClass('d-none');
+            $extra.toggleClass('d-none');
+            $(this).text(isHidden ? 'نمایش کمتر' : 'نمایش بیشتر');
+          });
+          $btnWrap.append($btn);
+          $section.append($btnWrap);
+        }
+      }
+
+      // رندر همه سکشن‌ها
+      Object.keys(modelsData).forEach(function(key){
+        renderSection(key, modelsData[key]);
+      });
+
+      const $links = $('#modelsTabs .nav-link');
+      const $sections = $('#sectionsContainer section');
+      const $header = $('nav.sticky-top');
+      const $tabsWrap = $('#tabsWrap');
+
+      function headerOffset(){
+        return $header.outerHeight() || 60;
+      }
+
+      function totalOffset(){
+        return headerOffset() + ($tabsWrap.outerHeight() || 0) + 8;
+      }
+
+      // تنظیم فاصله استیکی تب‌ها زیر هدر چسبان
+      function placeTabsBelowHeader(){
+        $tabsWrap.css('top', headerOffset() + 'px');
+      }
+
+      placeTabsBelowHeader();
+      $(window).on('resize', placeTabsBelowHeader);
+
+      $links.on('click', function(e){
+        e.preventDefault();
+        const target = $(this).attr('href');
+        const $el = $(target);
+        if ($el.length){
+          const top = $el.offset().top - totalOffset();
+          $('html, body').animate({ scrollTop: top }, 300);
+        }
+      });
+
+      // به‌روزرسانی تب فعال هنگام اسکرول
+      $(window).on('scroll', function(){
+        const scrollPos = $(document).scrollTop() + totalOffset();
+        let currentId = null;
+        $sections.each(function(){
+          const $sec = $(this);
+          if ($sec.offset().top <= scrollPos){
+            currentId = '#' + $sec.attr('id');
+          }
+        });
+        if (currentId){
+          $links.removeClass('active');
+          $links.filter('[href="' + currentId + '"]').addClass('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

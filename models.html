@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خرید و ارتقا بسته - گپ جی‌پی‌تی</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+  <style>
+    :root {
+      --surface-primary: rgb(40, 40, 40);
+      --text-primary: rgb(97, 94, 235);
+      --inverted-text: white;
+    }
+    
+    body {
+      background-color: rgb(33, 33, 33);
+      color: white;
+      font-family: 'vazir', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    /* دکمه‌های سوییچ */
+    .plan-btn-container {
+      display: inline-flex;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .plan-toggle-btn {
+      padding: 8px 24px;
+      border: none;
+      background-color: transparent;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .plan-toggle-btn.selected-mode-btn {
+      background-color: rgb(97, 94, 235);
+      color: white;
+    }
+    
+    /* کارت‌های بسته */
+    .card-container {
+      max-width: min(800px, 90vw);
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .sub-section {
+      flex: 1;
+      min-height: 450px;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .mobile-card {
+      margin: 10px;
+    }
+    
+    /* لیست امکانات */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .feature-list li i {
+      font-size: 24px;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .card-container > div {
+        flex-direction: column !important;
+      }
+      
+      .sub-section {
+        width: 100%;
+      }
+    }
+    
+    /* جدول مقایسه */
+    .comparison-table {
+      background-color: rgba(40, 40, 40, 0.8);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .comparison-table thead {
+      background-color: rgba(30, 30, 30, 0.9);
+    }
+    
+    .comparison-table th {
+      font-weight: 600;
+      padding: 12px;
+    }
+    
+    .comparison-table td {
+      padding: 10px;
+    }
+    
+    .comparison-table .category-header td {
+      background-color: rgba(97, 94, 235, 0.2);
+      font-weight: bold;
+    }
+    
+    .comparison-table tr:hover:not(.category-header) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* User Menu */
+    .user-menu {
+      position: absolute;
+      top: 49px;
+      left: 12px;
+      min-width: 200px;
+      background-color: rgb(40, 40, 40);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+    
+    .user-menu.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    
+    .user-menu .list-group-item {
+      background-color: transparent;
+      border: none;
+      color: #fff;
+      padding: 12px 16px;
+      transition: background-color 0.2s ease;
+      cursor: default;
+    }
+    
+    .user-menu .list-group-item-action {
+      cursor: pointer;
+    }
+    
+    .user-menu .list-group-item-action:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .user-menu .menu-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .user-menu .menu-label {
+      font-size: 14px;
+      flex: 1;
+    }
+    
+    .user-menu-trigger {
+      transition: opacity 0.2s ease;
+    }
+    
+    .user-menu-trigger:hover {
+      opacity: 0.7;
+    }
+    
+    /* Sidebar Toggle */
+    .sidebar-drawer {
+      transition: transform 0.2s ease, width 0.2s ease;
+      transform: translateX(0);
+    }
+    
+    .sidebar-drawer.collapsed {
+      transform: translateX(100%);
+      width: 0 !important;
+    }
+    
+    .sidebar-toggle-btn-header {
+      color: white;
+      transition: opacity 0.2s ease;
+    }
+    
+    .sidebar-toggle-btn-header:hover {
+      opacity: 0.7;
+    }
+    #nav-mobile{
+      display:none;
+    }
+    @media (max-width: 768px) {
+      #nav-mobile{
+      display:flex;
+      
+      }
+      #nav-desktop{
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="text-white d-flex">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar-drawer sticky-top" style="width: 300px; top: 0;">
+      <div class="drawer-content h-100 d-flex flex-column">
+        <!-- Header -->
+        
+
+
+
+
+        <div class="drawer-header p-3 pb-1">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex gap-2">
+              <button class="btn btn-link text-white p-1 sidebarToggle" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path fill="currentColor" fill-rule="evenodd" d="M8.857 3h6.286c1.084 0 1.958 0 2.666.058.729.06 1.369.185 1.961.487a5 5 0 0 1 2.185 2.185c.302.592.428 1.233.487 1.961.058.708.058 1.582.058 2.666v3.286c0 1.084 0 1.958-.058 2.666-.06.729-.185 1.369-.487 1.961a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C17.1 21 16.227 21 15.143 21H8.857c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.232-.487-1.961C1.5 15.6 1.5 14.727 1.5 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.728.185-1.369.487-1.961A5 5 0 0 1 4.23 3.544c.592-.302 1.233-.428 1.961-.487C6.9 3 7.773 3 8.857 3M6.354 5.051c-.605.05-.953.142-1.216.276a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216-.05.617-.051 1.41-.051 2.546v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h.6V5h-.6c-1.137 0-1.929 0-2.546.051M11.5 5v14h3.6c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.134-.263.226-.611.276-1.216.05-.617.051-1.41.051-2.546v-3.2c0-1.137 0-1.929-.051-2.546-.05-.605-.142-.953-.276-1.216a3 3 0 0 0-1.311-1.311c-.263-.134-.611-.226-1.216-.276C17.029 5.001 16.236 5 15.1 5zM5 8.5a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M5 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+              <button class="btn btn-link text-white p-1" type="button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+            
+            <button class="btn btn-link text-white p-2 d-flex align-items-center gap-2" type="button">
+              <span class="new-chat-text">گفت‌وگو جدید</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.673 3.913a3.121 3.121 0 1 1 4.414 4.414l-5.937 5.937a5 5 0 0 1-2.828 1.415l-2.18.31a1 1 0 0 1-1.132-1.13l.311-2.18A5 5 0 0 1 9.736 9.85zm3 1.414a1.12 1.12 0 0 0-1.586 0l-5.937 5.937a3 3 0 0 0-.849 1.697l-.123.86.86-.122a3 3 0 0 0 1.698-.849l5.937-5.937a1.12 1.12 0 0 0 0-1.586M11 4A1 1 0 0 1 10 5c-.998 0-1.702.008-2.253.06-.54.052-.862.141-1.109.267a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216C5.001 8.471 5 9.264 5 10.4v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h3.2c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.126-.247.215-.569.266-1.108.053-.552.06-1.256.06-2.255a1 1 0 1 1 2 .002c0 .978-.006 1.78-.069 2.442-.064.673-.192 1.27-.475 1.827a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C15.6 21 14.727 21 13.643 21h-3.286c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.233-.487-1.961C3 15.6 3 14.727 3 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.729.185-1.369.487-1.961A5 5 0 0 1 5.73 3.545c.556-.284 1.154-.411 1.827-.475C8.22 3.007 9.021 3 10 3A1 1 0 0 1 11 4"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Drawer Items -->
+        <div class="drawer-scroll flex-grow-1" style="overflow-y: auto;">
+          <div class="drawer-item clickable px-3 py-2 d-flex align-items-center gap-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 4.5C5.50736 4.5 4.5 5.50736 4.5 6.75C4.5 7.99264 5.50736 9 6.75 9C7.99264 9 9 7.99264 9 6.75C9 5.50736 7.99264 4.5 6.75 4.5ZM2.5 6.75C2.5 4.40279 4.40279 2.5 6.75 2.5C9.09721 2.5 11 4.40279 11 6.75C11 9.09721 9.09721 11 6.75 11C4.40279 11 2.5 9.09721 2.5 6.75Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M17.25 4.5C16.0074 4.5 15 5.50736 15 6.75C15 7.99264 16.0074 9 17.25 9C18.4926 9 19.5 7.99264 19.5 6.75C19.5 5.50736 18.4926 4.5 17.25 4.5ZM13 6.75C13 4.40279 14.9028 2.5 17.25 2.5C19.5972 2.5 21.5 4.40279 21.5 6.75C21.5 9.09721 19.5972 11 17.25 11C14.9028 11 13 9.09721 13 6.75Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 15C5.50736 15 4.5 16.0074 4.5 17.25C4.5 18.4926 5.50736 19.5 6.75 19.5C7.99264 19.5 9 18.4926 9 17.25C9 16.0074 7.99264 15 6.75 15ZM2.5 17.25C2.5 14.9028 4.40279 13 6.75 13C9.09721 13 11 14.9028 11 17.25C11 19.5972 9.09721 21.5 6.75 21.5C4.40279 21.5 2.5 19.5972 2.5 17.25Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M17.25 15C16.0074 15 15 16.0074 15 17.25C15 18.4926 16.0074 19.5 17.25 19.5C18.4926 19.5 19.5 18.4926 19.5 17.25C19.5 16.0074 18.4926 15 17.25 15ZM13 17.25C13 14.9028 14.9028 13 17.25 13C19.5972 13 21.5 14.9028 21.5 17.25C21.5 19.5972 19.5972 21.5 17.25 21.5C14.9028 21.5 13 19.5972 13 17.25Z" fill="currentColor"></path>
+            </svg>
+            <div class="drawer-item-text">لیست مدل‌های رسمی</div>
+          </div>
+
+          <div class="drawer-item clickable px-3 py-2 d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 15C8.44771 15 8 15.4477 8 16C8 16.5523 8.44771 17 9 17C9.55229 17 10 16.5523 10 16C10 15.4477 9.55229 15 9 15Z" fill="currentColor"></path>
+              <path d="M14 16C14 15.4477 14.4477 15 15 15C15.5523 15 16 15.4477 16 16C16 16.5523 15.5523 17 15 17C14.4477 17 14 16.5523 14 16Z" fill="currentColor"></path>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C10.8954 1 10 1.89543 10 3C10 3.74028 10.4022 4.38663 11 4.73244V7H6C4.34315 7 3 8.34315 3 10V20C3 21.6569 4.34315 23 6 23H18C19.6569 23 21 21.6569 21 20V10C21 8.34315 19.6569 7 18 7H13V4.73244C13.5978 4.38663 14 3.74028 14 3C14 1.89543 13.1046 1 12 1ZM5 10C5 9.44772 5.44772 9 6 9H7.38197L8.82918 11.8944C9.16796 12.572 9.86049 13 10.618 13H13.382C14.1395 13 14.832 12.572 15.1708 11.8944L16.618 9H18C18.5523 9 19 9.44772 19 10V20C19 20.5523 18.5523 21 18 21H6C5.44772 21 5 20.5523 5 20V10ZM13.382 11L14.382 9H9.61803L10.618 11H13.382Z" fill="currentColor"></path>
+            </svg>
+            <div class="drawer-item-text">
+              جستجو در دستیار‌ها
+              <div class="text-muted small">برای ساخت دستیار بسته‌ی خود را ارتقا دهید</div>
+            </div>
+          </div>
+
+          <!-- Chat History -->
+          <div class="chat-list mt-3">
+            <div class="chat-group">
+              <div class="chat-group-header px-3 py-2 text-muted small">۳۰ روز قبل</div>
+              <div class="chat-item px-3 py-2 d-flex align-items-center gap-2">
+                <div class="avatar rounded" style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;">
+                  <img src="/model_icons/gapgpt-icon-v3.png" alt="GapGPT" style="width: 24px; height: 24px; border-radius: 4px;" onerror="this.style.display='none'">
+                </div>
+                <div class="chat-item-text flex-grow-1">سلام و احوالپرسی</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Upgrade -->
+        <div class="drawer-footer mt-auto">
+          <hr class="my-2" style="border-color: rgba(255,255,255,0.1);">
+          <a href="purchase.html" class="text-decoration-none">
+          <div class="upgrade-section px-3 py-2 d-flex align-items-center gap-2 clickable">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M6.394 4.444c.188-.592 1.024-.592 1.212 0C8.4 8.9 9.1 9.6 13.556 10.394c.592.188.592 1.024 0 1.212C9.1 12.4 8.4 13.1 7.606 17.556c-.188.592-1.024.592-1.212 0C5.6 13.1 4.9 12.4.444 11.606c-.592-.188-.592-1.024 0-1.212C4.9 9.6 5.6 8.9 6.394 4.444m8.716 9.841a.41.41 0 0 1 .78 0c.51 2.865.96 3.315 3.825 3.826.38.12.38.658 0 .778-2.865.511-3.315.961-3.826 3.826a.408.408 0 0 1-.778 0c-.511-2.865-.961-3.315-3.826-3.826a.408.408 0 0 1 0-.778c2.865-.511 3.315-.961 3.826-3.826Zm2.457-12.968a.454.454 0 0 1 .866 0C19 4.5 19.5 5 22.683 5.567a.454.454 0 0 1 0 .866C19.5 7 19 7.5 18.433 10.683a.454.454 0 0 1-.866 0C17 7.5 16.5 7 13.317 6.433a.454.454 0 0 1 0-.866C16.5 5 17 4.5 17.567 1.317"></path>
+            </svg>
+            <div>
+              <div class="fw-bold">ارتقا بسته</div>
+              <div class="text-muted small">تولید عکس، رفع محدودیت‌ها و ...</div>
+            </div>
+          </div>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="w-100 main-content">
+      <!-- Header -->
+    <nav class="nav p-3 d-flex justify-content-between w-100 sticky-top" id="nav-desktop" style="background-color: rgb(33, 33, 33); top: 0;">
+    <div class="models d-flex gap-3 align-items-center">
+      <!-- آیکون سایدبار -->
+      <div class="sidebar-toggle-btn-header sidebarToggle" style="cursor: pointer; display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill="currentColor" fill-rule="evenodd" d="M8.857 3h6.286c1.084 0 1.958 0 2.666.058.729.06 1.369.185 1.961.487a5 5 0 0 1 2.185 2.185c.302.592.428 1.233.487 1.961.058.708.058 1.582.058 2.666v3.286c0 1.084 0 1.958-.058 2.666-.06.729-.185 1.369-.487 1.961a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C17.1 21 16.227 21 15.143 21H8.857c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.232-.487-1.961C1.5 15.6 1.5 14.727 1.5 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.728.185-1.369.487-1.961A5 5 0 0 1 4.23 3.544c.592-.302 1.233-.428 1.961-.487C6.9 3 7.773 3 8.857 3M6.354 5.051c-.605.05-.953.142-1.216.276a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216-.05.617-.051 1.41-.051 2.546v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h.6V5h-.6c-1.137 0-1.929 0-2.546.051M11.5 5v14h3.6c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.134-.263.226-.611.276-1.216.05-.617.051-1.41.051-2.546v-3.2c0-1.137 0-1.929-.051-2.546-.05-.605-.142-.953-.276-1.216a3 3 0 0 0-1.311-1.311c-.263-.134-.611-.226-1.216-.276C17.029 5.001 16.236 5 15.1 5zM5 8.5a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M5 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="person-temp d-flex gap-3 flex-row-reverse position-relative">
+      <i class="bi bi-file-person-fill user-menu-trigger" style="cursor: pointer; font-size: 26px;"></i>
+      <a href="index.html" class="new-chat-icon" style="color: white; text-decoration: none; display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" style="cursor: pointer;">
+          <path d="M15.673 3.913a3.121 3.121 0 1 1 4.414 4.414l-5.937 5.937a5 5 0 0 1-2.828 1.415l-2.18.31a1 1 0 0 1-1.132-1.13l.311-2.18A5 5 0 0 1 9.736 9.85zm3 1.414a1.12 1.12 0 0 0-1.586 0l-5.937 5.937a3 3 0 0 0-.849 1.697l-.123.86.86-.122a3 3 0 0 0 1.698-.849l5.937-5.937a1.12 1.12 0 0 0 0-1.586M11 4A1 1 0 0 1 10 5c-.998 0-1.702.008-2.253.06-.54.052-.862.141-1.109.267a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216C5.001 8.471 5 9.264 5 10.4v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h3.2c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.126-.247.215-.569.266-1.108.053-.552.06-1.256.06-2.255a1 1 0 1 1 2 .002c0 .978-.006 1.78-.069 2.442-.064.673-.192 1.27-.475 1.827a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C15.6 21 14.727 21 13.643 21h-3.286c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.233-.487-1.961C3 15.6 3 14.727 3 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.729.185-1.369.487-1.961A5 5 0 0 1 5.73 3.545c.556-.284 1.154-.411 1.827-.475C8.22 3.007 9.021 3 10 3A1 1 0 0 1 11 4"></path>
+        </svg>
+      </a>
+      
+      <!-- User Menu -->
+      <div class="user-menu" id="userMenu">
+        <div class="list-group list-group-flush">
+          <div class="list-group-item d-flex align-items-center gap-3">
+            <i class="bi bi-person-circle menu-icon"></i>
+            <div class="menu-label">۰۹۰۱۳۰۱۹۶۲۶</div>
+          </div>
+          
+          <hr class="my-1" style="border-color: rgba(255,255,255,0.1); margin: 0 12px;">
+          
+          <a href="purchase.html" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-credit-card menu-icon"></i>
+            <div class="menu-label">خرید بسته</div>
+          </a>
+          
+          <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-download menu-icon"></i>
+            <div class="menu-label">دانلود اپلیکیشن</div>
+          </a>
+          
+          <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-bell menu-icon"></i>
+            <div class="menu-label">بروزرسانی‌ها</div>
+          </a>
+          
+          <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-telegram menu-icon"></i>
+            <div class="menu-label">اتصال به ربات تلگرام</div>
+          </a>
+          
+          <hr class="my-1" style="border-color: rgba(255,255,255,0.1); margin: 0 12px;">
+          
+          <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-person menu-icon"></i>
+            <div class="menu-label">شخصی‌سازی</div>
+          </a>
+          
+          <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-gear menu-icon"></i>
+            <div class="menu-label">تنظیمات</div>
+          </a>
+          
+          <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <i class="bi bi-box-arrow-right menu-icon"></i>
+            <div class="menu-label">خروج</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <nav class="nav p-3 d-flex justify-content-between w-100 sticky-top" id="nav-mobile" style="background-color: rgb(33, 33, 33); top: 0; z-index: 100;">
+    <div class="models d-flex  gap-3 align-items-center position-relative">
+      <!-- آیکون منو موبایل -->
+      <div class="mobile-menu-icon" id="mobileMenuIcon" style="cursor: pointer; display: none;">
+        <i class="bi bi-list" style="font-size: 28px;"></i>
+      </div>
+      <!-- آیکون سایدبار دسکتاپ -->
+      <div class="desktop-sidebar-toggle" id="desktopSidebarToggle" style="cursor: pointer; display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill="currentColor" fill-rule="evenodd" d="M8.857 3h6.286c1.084 0 1.958 0 2.666.058.729.06 1.369.185 1.961.487a5 5 0 0 1 2.185 2.185c.302.592.428 1.233.487 1.961.058.708.058 1.582.058 2.666v3.286c0 1.084 0 1.958-.058 2.666-.06.729-.185 1.369-.487 1.961a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C17.1 21 16.227 21 15.143 21H8.857c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.232-.487-1.961C1.5 15.6 1.5 14.727 1.5 13.643v-3.286c0-1.084 0-1.958.058-2.666.06-.728.185-1.369.487-1.961A5 5 0 0 1 4.23 3.544c.592-.302 1.233-.428 1.961-.487C6.9 3 7.773 3 8.857 3M6.354 5.051c-.605.05-.953.142-1.216.276a3 3 0 0 0-1.311 1.311c-.134.263-.226.611-.276 1.216-.05.617-.051 1.41-.051 2.546v3.2c0 1.137 0 1.929.051 2.546.05.605.142.953.276 1.216a3 3 0 0 0 1.311 1.311c.263.134.611.226 1.216.276.617.05 1.41.051 2.546.051h.6V5h-.6c-1.137 0-1.929 0-2.546.051M11.5 5v14h3.6c1.137 0 1.929 0 2.546-.051.605-.05.953-.142 1.216-.276a3 3 0 0 0 1.311-1.311c.134-.263.226-.611.276-1.216.05-.617.051-1.41.051-2.546v-3.2c0-1.137 0-1.929-.051-2.546-.05-.605-.142-.953-.276-1.216a3 3 0 0 0-1.311-1.311c-.263-.134-.611-.226-1.216-.276C17.029 5.001 16.236 5 15.1 5zM5 8.5a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1M5 12a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+      <div class="model-selector" id="modelSelector" style="cursor: pointer;">
+        <p class="model mb-0">GapGPT-5 Lite</p>
+        <span class="model-arrow"><i class="bi bi-caret-down-fill"></i></span>
+      </div>
+      
+      <!-- Share Button (hidden initially) -->
+      <button class="btn btn-outline-light btn-sm rounded-circle share-button-container" id="shareBtn" style="display: none; width: 36px; height: 36px; padding: 0;">
+        <i class="bi bi-share"></i>
+      </button>
+      
+      <!-- Model Selection Menu -->
+      <div class="model-menu" id="modelMenu">
+        <!-- بخش ارتقا بسته -->
+        <div class="model-menu-item p-2 d-flex gap-2 align-items-center">
+          <div>
+            <button class="btn btn-sm text-white" style="background-color: rgb(97, 94, 235); padding: 4px 12px; font-size: 0.8rem;">ارتقا</button>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size: 0.85rem;">مدل‌های پیشرفته</div>
+            <div class="text-muted" style="font-size: 0.7rem;">GPT-5, Claude, Grok...</div>
+          </div>
+        </div>
+        
+        <hr class="m-0" style="border-color: rgba(255,255,255,0.1);">
+        
+        <!-- مدل‌ها -->
+        <div class="model-menu-item model-item-clickable d-flex gap-2 p-2">
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size: 0.9rem;">GapGPT-5</div>
+            <div class="text-muted" style="font-size: 0.75rem;">دسترسی به اینترنت و تولید عکس</div>
+          </div>
+          <div>
+            <img src="/model_icons/gapgpt-purple-icon-v3.png" alt="GapGPT-5" style="width: 32px; height: 32px; border-radius: 8px;" onerror="this.style.display='none'">
+          </div>
+        </div>
+        
+        <div class="model-menu-item model-item-clickable model-item-active d-flex gap-2 p-2">
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size: 0.9rem;">GapGPT-5 Lite</div>
+            <div class="text-muted" style="font-size: 0.75rem;">رایگان GPT-5 و GPT-5-mini</div>
+          </div>
+          <div>
+            <img src="/model_icons/gapgpt-icon-v3.png" alt="GapGPT-5 Lite" style="width: 32px; height: 32px; border-radius: 8px;" onerror="this.style.display='none'">
+          </div>
+        </div>
+        
+        <div class="model-menu-item model-item-clickable d-flex gap-2 p-2">
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size: 0.9rem;">مدل‌های دیگر</div>
+            <div class="text-muted" style="font-size: 0.75rem;">پلاس و پرو</div>
+          </div>
+          <div>
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+              <circle cx="6.75" cy="6.75" r="3.25" stroke="currentColor" stroke-width="2"></circle>
+              <circle cx="17.25" cy="6.75" r="3.25" stroke="currentColor" stroke-width="2"></circle>
+              <circle cx="6.75" cy="17.25" r="3.25" stroke="currentColor" stroke-width="2"></circle>
+              <circle cx="17.25" cy="17.25" r="3.25" stroke="currentColor" stroke-width="2"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="person-temp d-flex gap-3 flex-row-reverse position-relative">
+  <i class="bi bi-file-person-fill user-menu-trigger" style="cursor: pointer;"></i>
+  
+  
+  <!-- User Menu -->
+  <div class="user-menu fade" id="userMenu" style="display: none;">
+    <div class="list-group list-group-flush">
+      <div class="list-group-item d-flex align-items-center gap-3">
+        <i class="bi bi-person-circle menu-icon"></i>
+        <div class="menu-label">۰۹۰۱۳۰۱۹۶۲۶</div>
+      </div>
+      
+      <hr class="my-1" style="border-color: rgba(255,255,255,0.1); margin: 0 12px;">
+      
+      <a href="purchase.html" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-credit-card menu-icon"></i>
+        <div class="menu-label">خرید بسته</div>
+      </a>
+      
+      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-download menu-icon"></i>
+        <div class="menu-label">دانلود اپلیکیشن</div>
+      </a>
+      
+      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-bell menu-icon"></i>
+        <div class="menu-label">بروزرسانی‌ها</div>
+      </a>
+      
+      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-telegram menu-icon"></i>
+        <div class="menu-label">اتصال به ربات تلگرام</div>
+      </a>
+      
+      <hr class="my-1" style="border-color: rgba(255,255,255,0.1); margin: 0 12px;">
+      
+      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-person menu-icon"></i>
+        <div class="menu-label">شخصی‌سازی</div>
+      </a>
+      
+      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-gear menu-icon"></i>
+        <div class="menu-label">تنظیمات</div>
+      </a>
+      
+      <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+        <i class="bi bi-box-arrow-right menu-icon"></i>
+        <div class="menu-label">خروج</div>
+      </a>
+    </div>
+  </div>
+</div>
+</nav>
+
+  <div class="container-fluid p-4">
+    
+    <!-- عنوان صفحه -->
+    <div class="text-center mb-4">
+      <h1 class="h2 fw-bold">خرید و ارتقا بسته</h1>
+    </div>
+    <div class="container p-2" style="min-height: inherit;">
+  <h1 class="fs-3 mb-3 text-center" style="margin-bottom: 20px;">مدل‌ها</h1>
+  <p class="fs-6 mb-4 text-center text-secondary">انتخاب مدل مناسب برای نیازهای شما</p>
+  <div class="mb-5">
+    <div class="d-flex align-items-center position-relative">
+      <div class="overflow-auto flex-grow-1">
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary rounded-pill active category-tab" type="button">پر استفاده‌ترین‌ها</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">تولید تصویر</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">تولید ویدئو</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">تولید موسیقی</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">OpenAI</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">Claude</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">Gemini</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">DeepSeek</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">Grok</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">مدل‌های استدلالی</button>
+          <button class="btn btn-outline-secondary rounded-pill category-tab" type="button">مدل‌های دیگر</button>
+        </div>
+      </div>
+      <button class="btn btn-outline-secondary rounded-circle position-absolute end-0 nav-btn nav-btn-right" type="button">
+        <i class="material-icons">chevron_left</i>
+      </button>
+    </div>
+  </div>
+  <div class="categories-container">
+    <div class="mb-5" data-category-index="0">
+      <div class="mb-3">
+        <h2 class="fs-5 mb-1">پر استفاده‌ترین‌ها</h2>
+        <p class="fs-6 text-muted">مدل‌های محبوب و پر استفاده در گپ جی‌پی‌تی</p>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/gapgpt-purple-icon-v3.png" alt="GapGPT-5" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">GapGPT-5</div>
+                  <div class="small text-secondary" style="direction: rtl;">مدل gpt-5 با دسترسی به اینترنت و تولید عکس</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/gapgpt-icon-v3.png" alt="GapGPT-4.1" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">GapGPT-4.1</div>
+                  <div class="small text-secondary" style="direction: rtl;">مدل gpt-4.1 با دسترسی به اینترنت و تولید عکس</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/sonnet.jpeg" alt="Claude 4.5 Sonnet" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Claude 4.5 Sonnet</div>
+                  <div class="small text-secondary" style="direction: rtl;">نسخه جدید Sonnet با بهبود دقت و سرعت از Anthropic</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/qwen.jpeg" alt="Qwen 3" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Qwen 3</div>
+                  <div class="small text-secondary" style="direction: rtl;">مدل Qwen3 235B از شرکت Alibaba</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/deepseek.jpeg" alt="DeepSeek" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">DeepSeek</div>
+                  <div class="small text-secondary" style="direction: rtl;">جدید‌ترین مدل DeepSeek V3 و R1</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/xai.png" alt="Grok 4" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Grok 4</div>
+                  <div class="small text-secondary" style="direction: rtl;">جدیدترین مدل از XAI</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/o3.png" alt="o3" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">o3</div>
+                  <div class="small text-secondary" style="direction: rtl;">جدیدترین مدل از سری o3</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/gemini-pro.png" alt="Gemini 2.5 pro" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Gemini 2.5 pro</div>
+                  <div class="small text-secondary" style="direction: rtl;">جدید ترین مدل pro 06-05 از گوگل</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <button class="btn btn-outline-primary rounded-pill show-more-btn" type="button">نمایش بیشتر</button>
+      </div>
+    </div>
+    <div class="mb-5" data-category-index="1">
+      <div class="mb-3">
+        <h2 class="fs-5 mb-1">تولید تصویر</h2>
+        <p class="fs-6 text-muted">مدل‌های هوش مصنوعی برای تولید و ویرایش تصاویر</p>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/gemini-banana.png" alt="Nano Banana" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Nano Banana</div>
+                  <div class="small text-secondary" style="direction: rtl;">تولید تصاویر باکیفیت با مدل Gemini 2.5 Flash Image</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/gpt-1-image.png" alt="GPT Image 1" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">GPT Image 1</div>
+                  <div class="small text-secondary" style="direction: rtl;">تولید عکس‌های دقیق و با کیفیت بالا</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/flux-schnell.jpeg" alt="Flux Schnell" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Flux Schnell</div>
+                  <div class="small text-secondary" style="direction: rtl;">نسخه سریع‌تر Flux</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/midjourney.png" alt="Midjourney" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Midjourney</div>
+                  <div class="small text-secondary" style="direction: rtl;">تولید عکس‌های خلاقانه</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/dalle-3.jpg" alt="DALLE-3" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">DALLE-3</div>
+                  <div class="small text-secondary" style="direction: rtl;">مدل تولید عکس از OpenAI</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/flux-kontext.jpeg" alt="Flux Pro Kontext" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Flux Pro Kontext</div>
+                  <div class="small text-secondary" style="direction: rtl;">مدل مناسب ویرایش تصاویر و تولید جزئیات بالا</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/imagen4.jpeg" alt="Imagen 4" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Imagen 4</div>
+                  <div class="small text-secondary" style="direction: rtl;">پیشرفته‌ترین مدل تولید تصویر گوگل</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mb-5" data-category-index="2">
+      <div class="mb-3">
+        <h2 class="fs-5 mb-1">تولید ویدئو</h2>
+        <p class="fs-6 text-muted">مدل‌های نوین برای تولید و ویرایش ویدئو</p>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/veo3.jpeg" alt="Veo 3.1 Fast" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Veo 3.1 Fast</div>
+                  <div class="small text-secondary" style="direction: rtl;">قوی‌ترین مدل تولید ویدئو همراه صدا از گوگل</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class
+
+="card
+
+-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/veo3.jpeg" alt="Veo 3.1" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Veo 3.1</div>
+                  <div class="small text-secondary" style="direction: rtl;">قوی‌ترین مدل تولید ویدئو از گوگل (آزمایشی)</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/sora2.png" alt="Sora 2" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Sora 2</div>
+                  <div class="small text-secondary" style="direction: rtl;">جدیدترین مدل تولید ویدئو از OpenAI</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/kling.png" alt="Kling v2.1 standard" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Kling v2.1 standard</div>
+                  <div class="small text-secondary" style="direction: rtl;">مناسب تولید ویدئو</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mb-5" data-category-index="3">
+      <div class="mb-3">
+        <h2 class="fs-5 mb-1">تولید موسیقی</h2>
+        <p class="fs-6 text-muted">ساخت آهنگ، متن ترانه و کاور با Suno</p>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between position-relative">
+            <span class="badge bg-warning position-absolute top-0 start-0 m-2">پرو</span>
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/assets/suno-logo.png" alt="Suno Music" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">Suno Music</div>
+                  <div class="small text-secondary" style="direction: rtl;">ساخت موسیقی با کاور و متن ترانه</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mb-5" data-category-index="4">
+      <div class="mb-3">
+        <h2 class="fs-5 mb-1">OpenAI</h2>
+        <p class="fs-6 text-muted">مدل‌های GPT، O-series و DALL-E از OpenAI</p>
+      </div>
+      <div class="row g-3 mb-3">
+        <!-- مشابه بالا، فقط نمونه اول -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card border-light h-100 d-flex flex-column justify-content-between">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar flex-shrink-0" style="width:40px;height:40px;">
+                  <img src="/model_icons/gapgpt-purple-icon-v3.png" alt="GapGPT-5" class="rounded-circle w-100 h-100 object-fit-cover">
+                </div>
+                <div>
+                  <div class="fs-6 mb-1">GapGPT-5</div>
+                  <div class="small text-secondary" style="direction: rtl;">مدل gpt-5 با دسترسی به اینترنت و تولید عکس</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-0 border-0 mt-3">
+              <button class="btn btn-primary w-100 rounded-0" type="button">
+                <i class="material-icons align-middle">arrow_back</i>
+                <span class="align-middle">انتخاب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- بقیه مدل‌ها مشابه -->
+      </div>
+      <div class="text-center mt-3">
+        <button class="btn btn-outline-primary rounded-pill show-more-btn" type="button">نمایش بیشتر</button>
+      </div>
+    </div>
+    <!-- بقیه دسته‌ها هم به همین شکل -->
+  </div>
+</div>
+    
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    $(document).ready(function() {
+      // دکمه شخصی
+      $('[data-plan="personal"]').on('click', function() {
+        // دکمه‌ها
+        $('.plan-toggle-btn').removeClass('selected-mode-btn').addClass('default-mode-btn');
+        $(this).removeClass('default-mode-btn').addClass('selected-mode-btn');
+        
+        // بسته‌ها
+        $('.personal-packages').removeClass('d-none').addClass('d-flex');
+        $('.organization-packages').removeClass('d-flex').addClass('d-none');
+      });
+      
+      // دکمه سازمانی
+      $('[data-plan="organization"]').on('click', function() {
+        // دکمه‌ها
+        $('.plan-toggle-btn').removeClass('selected-mode-btn').addClass('default-mode-btn');
+        $(this).removeClass('default-mode-btn').addClass('selected-mode-btn');
+        
+        // بسته‌ها
+        $('.personal-packages').removeClass('d-flex').addClass('d-none');
+        $('.organization-packages').removeClass('d-none').addClass('d-flex');
+      });
+      
+      // Sidebar Toggle
+      $('.sidebarToggle').click(function() {
+        const isClosed = $('.sidebar-drawer').hasClass('collapsed');
+        
+        if (isClosed) {
+          // باز کردن سایدبار
+          $('.sidebar-drawer').removeClass('collapsed');
+          $(this).hide();
+          $('.new-chat-icon').hide();
+        }
+      });
+
+      
+      $('.sidebarToggle').click(function() {
+        const isClosed = $('.sidebar-drawer').hasClass('collapsed');
+        
+        if (isClosed) {
+            // باز کردن سایدبار
+            $('.sidebar-drawer').removeClass('collapsed');
+            $(this).hide();
+            
+            // تنظیم کانتنت و فرم footer (فقط در دسکتاپ)
+            if ($(window).width() > 768) {
+                $('.main-content').css('margin-right', '300px');
+                $('.chat-input-footer').css('right', '300px');
+                $('#desktopSidebarToggle').hide();
+            }
+        }
+    });
+
+
+
+function handleMobileNav() {
+  const width = $(window).width();
+
+  if (width <= 768) {
+    // حالت موبایل
+    $('#nav-mobile')
+      .removeClass('d-none')
+      .addClass('d-flex');
+
+    $('#nav-desktop')
+      .removeClass('d-flex')
+      .addClass('d-none');
+  } else {
+    // حالت دسکتاپ
+    $('#nav-mobile')
+      .removeClass('d-flex')
+      .addClass('d-none');
+
+    $('#nav-desktop')
+      .removeClass('d-none')
+      .addClass('d-flex');
+  }
+}
+
+// اجرای اولیه
+$(document).ready(function () {
+  handleMobileNav();
+
+  // هر بار که سایز صفحه تغییر کرد
+  $(window).resize(function () {
+    handleMobileNav();
+  });
+});
+      // دکمه داخل سایدبار برای بستن
+      $('.sidebar-drawer .btn-link').first().click(function() {
+        $('.sidebar-drawer').addClass('collapsed');
+        $('.sidebarToggle').show();
+        $('.new-chat-icon').show();
+      });
+      
+      // Menu Toggle
+      $('.user-menu-trigger').click(function(e) {
+        e.stopPropagation();
+        $('#userMenu').toggleClass('show');
+      });
+      
+      $(document).click(function() {
+        $('#userMenu').removeClass('show');
+      });
+      
+      $('#userMenu').click(function(e) {
+        e.stopPropagation();
+      });
+    });
+  
+
+  </script>
+    </main>
+  </div>
+</body>
+</html>

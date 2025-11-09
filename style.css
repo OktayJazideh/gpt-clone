@@ -157,7 +157,9 @@ body{
 body:not([data-theme="light"]) .text-dark,
 body:not([data-theme="light"]) .fw-semibold,
 body:not([data-theme="light"]) .fw-bold {
-    color: #e0e0e0 !important;
+        color: #e0e0e0 !important;
+    border-radius: 15px;
+    padding: 10px;
 }
 
 body:not([data-theme="light"]) .text-muted {

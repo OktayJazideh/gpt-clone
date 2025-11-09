@@ -905,13 +905,15 @@ $(document).ready(function() {
     // کلیک روی لیست مدل‌ها
     $('.drawer-item').eq(0).on('click', function() {
         console.log('باز کردن لیست مدل‌ها');
-        // اینجا می‌تونی مودال یا صفحه جدید باز کنی
+        // هدایت به صفحه لیست مدل‌ها
+        window.location.href = 'all-models.html';
     });
 
     // کلیک روی جستجو در دستیار‌ها
     $('.drawer-item').eq(1).on('click', function() {
         console.log('جستجو در دستیار‌ها');
-        // اینجا می‌تونی صفحه جستجو باز کنی
+        // هدایت به صفحه جستجو در دستیارها
+        window.location.href = 'assistants-search.html';
     });
     
     // دکمه اشتراک‌گذاری
