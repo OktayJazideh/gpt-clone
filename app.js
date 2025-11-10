@@ -1,47 +1,342 @@
 $(document).ready(function() {
     let attachedFiles = [];
     let currentChatId = null;
+    let isSending = false; // حالت در حال ارسال پیام
     
-    // Chat History Management
+    // استفاده از chatHistoryManager جدید
+    const chatManager = window.chatHistoryManager;
+    
+    // ================== Speech Recognition Setup ==================
+    let recognition = null;
+    let isRecording = false;
+    let interimTranscript = '';
+    let finalTranscript = '';
+    
+    // بررسی پشتیبانی مرورگر از Web Speech API
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        
+        // تنظیمات
+        recognition.continuous = true; // ضبط مداوم
+        recognition.interimResults = true; // نمایش نتایج موقت
+        recognition.lang = 'fa-IR'; // زبان فارسی (می‌تونید تغییر بدید)
+        recognition.maxAlternatives = 1;
+        
+        // رویداد شروع ضبط
+        recognition.onstart = function() {
+            console.log('🎤 ضبط صدا شروع شد');
+            isRecording = true;
+            updateVoiceButtonState();
+        };
+        
+        // رویداد دریافت نتیجه
+        recognition.onresult = function(event) {
+            interimTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            // نمایش متن در textarea
+            const $textarea = $('#chatTextarea');
+            $textarea.val(finalTranscript + interimTranscript);
+            $textarea.trigger('input'); // برای آپدیت ارتفاع
+            
+            console.log('📝 متن شناسایی شده:', finalTranscript + interimTranscript);
+        };
+        
+        // رویداد خطا
+        recognition.onerror = function(event) {
+            console.error('❌ خطا در ضبط صدا:', event.error);
+            
+            let errorMessage = 'خطا در ضبط صدا';
+            switch(event.error) {
+                case 'no-speech':
+                    errorMessage = 'صدایی شناسایی نشد. لطفاً دوباره تلاش کنید.';
+                    break;
+                case 'audio-capture':
+                    errorMessage = 'میکروفون یافت نشد. لطفاً میکروفون را فعال کنید.';
+                    break;
+                case 'not-allowed':
+                    errorMessage = 'دسترسی به میکروفون رد شد. لطفاً دسترسی را مجاز کنید.';
+                    break;
+                case 'network':
+                    errorMessage = 'خطا در اتصال به اینترنت';
+                    break;
+            }
+            
+            alert(errorMessage);
+            stopRecording();
+        };
+        
+        // رویداد پایان ضبط
+        recognition.onend = function() {
+            console.log('🛑 ضبط صدا متوقف شد');
+            isRecording = false;
+            updateVoiceButtonState();
+        };
+    } else {
+        console.warn('⚠️ مرورگر شما از Web Speech API پشتیبانی نمی‌کند');
+    }
+    
+    // توابع کنترل ضبط
+    function startRecording() {
+        if (!recognition) {
+            alert('مرورگر شما از تبدیل صدا به متن پشتیبانی نمی‌کند.\n\nلطفاً از Chrome، Edge یا Safari استفاده کنید.');
+            return;
+        }
+        
+        finalTranscript = $('#chatTextarea').val(); // حفظ متن قبلی
+        interimTranscript = '';
+        
+        try {
+            recognition.start();
+            console.log('▶️ شروع ضبط...');
+        } catch (error) {
+            console.error('خطا در شروع ضبط:', error);
+        }
+    }
+    
+    function stopRecording() {
+        if (recognition && isRecording) {
+            recognition.stop();
+            console.log('⏹️ توقف ضبط...');
+        }
+    }
+    
+    function updateVoiceButtonState() {
+        const $voiceBtn = $('#voiceBtn');
+        const $micIcon = $voiceBtn.find('i');
+        const $textarea = $('#chatTextarea');
+        const $inputWrapper = $('.input-wrapper');
+        
+        if (isRecording) {
+            // حالت ضبط - تبدیل دکمه میکروفون به دکمه توقف
+            $voiceBtn.removeClass('btn-outline-light').addClass('btn-danger recording-pulse');
+            $micIcon.removeClass('bi-mic').addClass('bi-stop-circle-fill');
+            $voiceBtn.attr('title', 'کلیک برای توقف ضبط');
+            
+            // تغییر حالت textarea
+            $textarea.addClass('recording-mode');
+            $inputWrapper.addClass('recording-active');
+            
+            // نمایش نمایشگر وضعیت ضبط با دکمه قطع
+            showRecordingStatus();
+        } else {
+            // حالت عادی
+            $voiceBtn.removeClass('btn-danger recording-pulse').addClass('btn-outline-light');
+            $micIcon.removeClass('bi-stop-circle-fill').addClass('bi-mic');
+            $voiceBtn.attr('title', 'تبدیل صدا به متن');
+            
+            // برگرداندن حالت عادی textarea
+            $textarea.removeClass('recording-mode');
+            $inputWrapper.removeClass('recording-active');
+            
+            // حذف نمایشگر وضعیت ضبط
+            hideRecordingStatus();
+            
+            // دکمه میکروفون همیشه نمایش داده میشه
+            $('#voiceBtn').show();
+            
+            // بررسی اینکه آیا متن داریم یا نه
+            const hasText = $textarea.val().trim().length > 0;
+            if (hasText) {
+                // اگر متن داریم، soundwave رو مخفی کن و send رو نشون بده
+                $('#soundwaveBtn').hide();
+                $('#sendMessageBtn').show();
+            } else {
+                // اگر متن نداریم، soundwave رو نشون بده و send رو مخفی کن
+                $('#soundwaveBtn').show();
+                $('#sendMessageBtn').hide();
+            }
+        }
+    }
+    
+    function showRecordingStatus() {
+        // حذف نمایشگر قبلی اگر وجود داشته باشد
+        $('.recording-status').remove();
+        
+        // ساخت نمایشگر جدید با دکمه قطع
+        const $status = $(`
+            <div class="recording-status">
+                <div class="recording-status-dot"></div>
+                <span>در حال ضبط صدا...</span>
+                <div class="recording-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <button class="btn btn-sm btn-light recording-stop-btn" type="button" title="توقف ضبط">
+                    <i class="bi bi-stop-circle-fill"></i>
+                </button>
+            </div>
+        `);
+        
+        $('body').append($status);
+        
+        // اضافه کردن event handler به دکمه قطع
+        $status.find('.recording-stop-btn').on('click', function() {
+            stopRecording();
+        });
+        
+        // انیمیشن ورود
+        setTimeout(() => {
+            $status.css('opacity', '1');
+        }, 100);
+    }
+    
+    function hideRecordingStatus() {
+        const $status = $('.recording-status');
+        
+        if ($status.length) {
+            $status.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }
+    }
+    
+    // کلیک روی دکمه میکروفون
+    $('#voiceBtn').on('click', function() {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    });
+    
+    // کلیک روی دکمه Voice Chat (soundwave) - نمایش مودال ارتقا
+    $('#soundwaveBtn').on('click', function() {
+        const voiceChatModal = new bootstrap.Modal(document.getElementById('voiceChatModal'));
+        voiceChatModal.show();
+    });
+    
+    // سیستم انتخاب ابزار و چیپس‌ها
+    let selectedTool = null;
+    const defaultPlaceholder = 'پیام خود را بنویسید...';
+    
+    function selectTool(toolData) {
+        // بررسی وجود داده‌ها
+        if (!toolData || !toolData.tool) {
+            console.error('داده‌های ابزار نامعتبر است:', toolData);
+            return;
+        }
+        
+        selectedTool = {
+            tool: toolData.tool,
+            icon: toolData.icon || 'bi-gear',
+            label: toolData.label || toolData.text || 'ابزار',
+            placeholder: toolData.placeholder || defaultPlaceholder
+        };
+        
+        // نمایش چیپس کوچیک کنار دکمه ابزار
+        const $chip = $('#selectedToolChip');
+        const $icon = $('#selectedToolIcon');
+        const $label = $('#selectedToolLabel');
+        
+        $icon.attr('class', 'bi ' + selectedTool.icon);
+        $label.text(selectedTool.label);
+        $chip.removeClass('d-none').addClass('d-flex');
+        
+        // تغییر placeholder
+        $('#chatTextarea').attr('placeholder', selectedTool.placeholder);
+        
+        // بستن منوی ابزار
+        $('#toolsMenu').removeClass('show');
+        
+        console.log('✅ ابزار انتخاب شد:', selectedTool);
+    }
+    
+    function clearSelectedTool() {
+        selectedTool = null;
+        
+        // مخفی کردن چیپس
+        $('#selectedToolChip').removeClass('d-flex').addClass('d-none');
+        
+        // برگرداندن placeholder به حالت عادی
+        $('#chatTextarea').attr('placeholder', defaultPlaceholder);
+        
+        console.log('ابزار پاک شد');
+    }
+    
+    // کلیک روی چیپس‌های اصلی
+    $(document).on('click', '.chip-item', function() {
+        const $this = $(this);
+        const toolData = {
+            tool: $this.data('tool'),
+            icon: $this.data('icon'),
+            text: $this.find('span').text(),
+            placeholder: $this.data('placeholder')
+        };
+        
+        selectTool(toolData);
+        
+        // فوکوس روی textarea
+        $('#chatTextarea').focus();
+    });
+    
+    // کلیک روی آیتم‌های منوی ابزار
+    $(document).on('click', '.tools-menu-item', function(e) {
+        e.stopPropagation(); // جلوگیری از بسته شدن منو توسط document click
+        
+        const $this = $(this);
+        const toolData = {
+            tool: $this.data('tool'),
+            icon: $this.data('icon'),
+            label: $this.data('label'),
+            placeholder: $this.data('placeholder')
+        };
+        
+        selectTool(toolData);
+        
+        // فوکوس روی textarea
+        $('#chatTextarea').focus();
+    });
+    
+    // کلیک روی دکمه حذف ابزار
+    $('#removeToolBtn').on('click', function(e) {
+        e.stopPropagation();
+        clearSelectedTool();
+    });
+    
+    // Chat History Management - استفاده از سیستم جدید
     function getChatHistory() {
-        const history = localStorage.getItem('chatHistory');
-        return history ? JSON.parse(history) : [];
+        return chatManager ? chatManager.getAll() : [];
     }
     
     function saveChatHistory(history) {
-        localStorage.setItem('chatHistory', JSON.stringify(history));
+        // دیگر نیازی نیست - chatManager خودش ذخیره می‌کند
+        console.log('saveChatHistory deprecated - using chatManager');
     }
     
     function createNewChat(firstMessage) {
-        const chat = {
-            id: Date.now().toString(),
-            title: firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : ''),
-            messages: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
+        if (!chatManager) {
+            console.error('chatManager not found!');
+            return null;
+        }
         
-        const history = getChatHistory();
-        history.unshift(chat);
-        saveChatHistory(history);
+        const chat = chatManager.createChat(firstMessage);
         currentChatId = chat.id;
         
+        console.log('✅ چت جدید ساخته شد:', chat.id);
         return chat;
     }
     
     function addMessageToChat(chatId, message, role) {
-        const history = getChatHistory();
-        const chat = history.find(c => c.id === chatId);
-        
-        if (chat) {
-            chat.messages.push({
-                role: role,
-                content: message,
-                timestamp: new Date().toISOString()
-            });
-            chat.updatedAt = new Date().toISOString();
-            saveChatHistory(history);
+        if (!chatManager) {
+            console.error('chatManager not found!');
+            return;
         }
+        
+        chatManager.addMessage(chatId, message, role);
+        console.log('✅ پیام اضافه شد به چت:', chatId);
     }
     
     function getTimeCategory(dateString) {
@@ -59,8 +354,12 @@ $(document).ready(function() {
     
     // نمایش پیام‌ها در صفحه چت
     function renderMessages(chatId) {
-        const history = getChatHistory();
-        const chat = history.find(c => c.id === chatId);
+        if (!chatManager) {
+            console.error('chatManager not found!');
+            return;
+        }
+        
+        const chat = chatManager.getChatById(chatId);
         
         if (!chat || !chat.messages) return;
         
@@ -127,8 +426,7 @@ $(document).ready(function() {
         
         $(document).off('click', '.edit-message-btn').on('click', '.edit-message-btn', function() {
             const idx = $(this).data('index');
-            const history = getChatHistory();
-            const chat = history.find(c => c.id === currentChatId);
+            const chat = chatManager.getChatById(currentChatId);
             if (!chat) return;
             const msg = chat.messages[idx];
             if (!msg || msg.role !== 'user') return;
@@ -137,7 +435,7 @@ $(document).ready(function() {
             $('.input-wrapper textarea').val(msg.content).focus().trigger('input');
             // حذف پیام قبلی از چت
             chat.messages.splice(idx, 1);
-            saveChatHistory(history);
+            chatManager.saveAll(chatManager.getAll());
             renderMessages(currentChatId);
         });
         
@@ -145,39 +443,53 @@ $(document).ready(function() {
             const idx = $(this).data('index');
             console.log('Regenerate for message index:', idx);
             
-            if (isGenerating) return; // اگر در حال تولید هست، برگرد
+            if (isGenerating || isSending) return; // اگر در حال ارسال یا تولید هست، برگرد
             
-            const history = getChatHistory();
-            const chat = history.find(c => c.id === currentChatId);
+            const chat = chatManager.getChatById(currentChatId);
             if (!chat) return;
             
-            // حذف پاسخ قبلی و تولید جدید
+            // حذف پاسخ قبلی
             chat.messages.splice(idx, 1);
-            saveChatHistory(history);
+            chatManager.saveAll(chatManager.getAll());
             renderMessages(currentChatId);
             
             // پیدا کردن پیام کاربر قبل از این پاسخ
             const userMessage = chat.messages[idx - 1];
             const userMessageText = userMessage ? userMessage.content : 'درخواست قبلی';
             
-            // تغییر حالت به generating
-            isGenerating = true;
+            // اگر در حال ضبط بود، اول متوقفش کن
+            if (isRecording) {
+                stopRecording();
+            }
+            
+            // مرحله 1: شروع regenerate - نمایش Loading
+            isSending = true;
             $('#sendMessageBtn').show();
-            $('#voiceBtn').hide();
+            $('#voiceBtn').show();
             $('#soundwaveBtn').hide();
             updateSendButtonState();
             
-            // تولید پاسخ جدید
-            currentGenerationTimeout = setTimeout(() => {
-                const newResponse = 'پاسخ جدید برای: "' + userMessageText + '"';
-                addMessageToChat(currentChatId, newResponse, 'assistant');
-                renderMessages(currentChatId);
-                
-                // برگرداندن حالت عادی
-                isGenerating = false;
-                currentGenerationTimeout = null;
+            // شبیه‌سازی پردازش درخواست
+            setTimeout(() => {
+                // مرحله 2: درخواست ارسال شد - تغییر به Stop
+                isSending = false;
+                isGenerating = true;
                 updateSendButtonState();
-            }, 3000);
+                
+                console.log('🔄 در حال تولید پاسخ جدید...');
+                
+                // تولید پاسخ جدید
+                currentGenerationTimeout = setTimeout(() => {
+                    const newResponse = 'پاسخ جدید برای: "' + userMessageText + '"';
+                    addMessageToChat(currentChatId, newResponse, 'assistant');
+                    renderMessages(currentChatId);
+                    
+                    // مرحله 3: پاسخ دریافت شد - برگشت به حالت عادی
+                    isGenerating = false;
+                    currentGenerationTimeout = null;
+                    updateSendButtonState();
+                }, 3000);
+            }, 800); // زمان شبیه‌سازی پردازش
         });
         
         $(document).off('click', '.like-message-btn').on('click', '.like-message-btn', function() {
@@ -190,6 +502,13 @@ $(document).ready(function() {
     }
     
     function renderChatHistory() {
+        // استفاده از تابع رندر از chatIntegration
+        if (window.renderSidebarChats) {
+            window.renderSidebarChats();
+            return;
+        }
+        
+        // اگر تابع window وجود نداشت، از کد قدیمی استفاده کن
         const history = getChatHistory();
         const grouped = {};
         
@@ -353,84 +672,14 @@ $(document).ready(function() {
         }
     });
     
-    // پین کردن
-    $(document).on('click', '.chat-action-pin', function(e) {
-        e.stopPropagation();
-        console.log('Pin action clicked');
-        const chatId = String($(this).closest('.chat-item').data('chat-id'));
-        console.log('Chat ID:', chatId);
-        const history = getChatHistory();
-        const chat = history.find(c => String(c.id) === chatId);
-        
-        if (chat) {
-            chat.isPinned = !chat.isPinned;
-            console.log('Chat pinned status:', chat.isPinned);
-            saveChatHistory(history);
-            renderChatHistory();
-        } else {
-            console.error('Chat not found:', chatId);
-        }
-    });
+    // این handler ها در chatIntegration.js پیاده‌سازی شده‌اند
+    // پین کردن - حالا در chatIntegration.js مدیریت می‌شود
     
-    // حذف کردن
-    let chatToDelete = null;
+    // حذف کردن - حالا در chatIntegration.js مدیریت می‌شود
     
-    $(document).on('click', '.chat-action-delete', function(e) {
-        e.stopPropagation();
-        console.log('Delete action clicked');
-        chatToDelete = String($(this).closest('.chat-item').data('chat-id'));
-        console.log('Chat to delete:', chatToDelete);
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteChatModal'));
-        deleteModal.show();
-    });
+    // آرشیو کردن - حالا در chatIntegration.js مدیریت می‌شود
     
-    $('#confirmDeleteBtn').on('click', function() {
-        if (chatToDelete) {
-            let history = getChatHistory();
-            history = history.filter(c => String(c.id) !== chatToDelete);
-            saveChatHistory(history);
-            renderChatHistory();
-            chatToDelete = null;
-            
-            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteChatModal'));
-            deleteModal.hide();
-        }
-    });
-    
-    // آرشیو کردن
-    $(document).on('click', '.chat-action-archive', function(e) {
-        e.stopPropagation();
-        console.log('Archive action clicked');
-        const chatId = String($(this).closest('.chat-item').data('chat-id'));
-        console.log('Chat to archive:', chatId);
-        const history = getChatHistory();
-        const chat = history.find(c => String(c.id) === chatId);
-        
-        if (chat) {
-            chat.isArchived = true;
-            console.log('Chat archived');
-            saveChatHistory(history);
-            renderChatHistory();
-        }
-    });
-    
-    // خروج از آرشیو
-    $(document).on('click', '.chat-action-unarchive', function(e) {
-        e.stopPropagation();
-        console.log('Unarchive action clicked');
-        const chatId = String($(this).closest('.chat-item').data('chat-id'));
-        console.log('Chat to unarchive:', chatId);
-        const history = getChatHistory();
-        const chat = history.find(c => String(c.id) === chatId);
-        
-        if (chat) {
-            chat.isArchived = false;
-            console.log('Chat unarchived');
-            saveChatHistory(history);
-            renderChatHistory();
-            renderArchivedChatsModal(); // به‌روزرسانی مودال آرشیو
-        }
-    });
+    // خروج از آرشیو - حالا در chatIntegration.js مدیریت می‌شود
     
     // فانکشن رندر کردن چت‌های آرشیو شده در مودال
     function renderArchivedChatsModal() {
@@ -527,28 +776,7 @@ $(document).ready(function() {
         }
     });
     
-    // تغییر نام
-    $(document).on('click', '.chat-action-rename', function(e) {
-        e.stopPropagation();
-        console.log('Rename action clicked');
-        const chatItem = $(this).closest('.chat-item');
-        const chatId = String(chatItem.data('chat-id'));
-        console.log('Chat to rename:', chatId);
-        const history = getChatHistory();
-        const chat = history.find(c => String(c.id) === chatId);
-        
-        if (chat) {
-            chatToRename = chatId;
-            $('#chatNewName').val(chat.title);
-            const renameModal = new bootstrap.Modal(document.getElementById('renameChatModal'));
-            renameModal.show();
-            
-            // فوکوس روی اینپوت بعد از باز شدن مودال
-            $('#renameChatModal').on('shown.bs.modal', function() {
-                $('#chatNewName').focus().select();
-            });
-        }
-    });
+    // تغییر نام - حالا در chatIntegration.js مدیریت می‌شود
     
     
     // Package Purchase Section Navigation
@@ -657,14 +885,23 @@ $(document).ready(function() {
     });
 
     // دکمه انتخاب فایل
-    $('.btn-outline-light.btn-sm.rounded-circle:first').on('click', function() {
-        const fileInput = $('<input type="file" multiple style="display: none;">');
+    $('#attachFileBtn').on('click', function() {
+        const fileInput = $('<input type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="display: none;">');
         
         fileInput.on('change', function() {
             const files = this.files;
-            $.each(files, function(index, file) {
-                displayFile(file);
-            });
+            if (files.length > 0) {
+                // اگر container فایل‌ها وجود نداره، بسازش
+                if ($('.files-preview').length === 0) {
+                    $('.input-wrapper').prepend('<div class="files-preview d-flex flex-wrap gap-2 mb-2"></div>');
+                }
+                
+                $.each(files, function(index, file) {
+                    displayFile(file);
+                });
+                
+                console.log('✅', files.length, 'فایل انتخاب شد');
+            }
         });
         
         fileInput.trigger('click');
@@ -719,15 +956,25 @@ $(document).ready(function() {
     $('#chatTextarea').on('input', function() {
         const hasText = $(this).val().trim().length > 0;
         
+        // دکمه میکروفون همیشه نمایش داده میشه
+        $('#voiceBtn').show();
+        
+        // اگر در حال ضبط هستیم، دکمه voiceBtn (که حالا stop شده) رو نگه‌دار
+        if (isRecording) {
+            // فقط soundwave رو مخفی کن
+            $('#soundwaveBtn').hide();
+            // sendMessageBtn رو مخفی کن
+            $('#sendMessageBtn').hide();
+            return;
+        }
+        
         if (hasText) {
-            // مخفی کردن دکمه صدا و soundwave
-            $('#voiceBtn').hide();
+            // مخفی کردن soundwave فقط
             $('#soundwaveBtn').hide();
             // نمایش دکمه ارسال
             $('#sendMessageBtn').show();
         } else {
-            // نمایش دکمه صدا و soundwave
-            $('#voiceBtn').show();
+            // نمایش soundwave
             $('#soundwaveBtn').show();
             // مخفی کردن دکمه ارسال
             $('#sendMessageBtn').hide();
@@ -740,8 +987,9 @@ $(document).ready(function() {
     let currentGenerationTimeout = null;
     
     function sendMessage() {
-        // اگر در حال تولید پاسخ است، نباید پیام جدید بفرستیم
-        if (isGenerating) {
+        // اگر در حال ارسال یا تولید پاسخ است، نباید پیام جدید بفرستیم
+        if (isSending || isGenerating) {
+            console.log('⚠️ در حال پردازش... لطفاً صبر کنید');
             return;
         }
         
@@ -798,35 +1046,52 @@ $(document).ready(function() {
             
             // ذخیره پیام کاربر
             if (currentChatId) {
-                addMessageToChat(currentChatId, message, 'user');
-                renderMessages(currentChatId);
+                // مرحله 1: شروع ارسال پیام - نمایش Loading
+                isSending = true;
+                $('#sendMessageBtn').show();
+                $('#voiceBtn').show();
+                $('#soundwaveBtn').hide();
+                updateSendButtonState();
                 
                 // پاک کردن فرم
                 $('.input-wrapper textarea').val('');
                 attachedFiles = [];
                 $('.files-preview').remove();
+                clearSelectedTool(); // پاک کردن ابزار انتخاب شده
+                $('.reply-box').remove(); // پاک کردن reply box
+                selectedQuote = null;
                 
-                // تغییر حالت به generating
-                isGenerating = true;
+                // اگر در حال ضبط بود، اول متوقفش کن
+                if (isRecording) {
+                    stopRecording();
+                }
                 
-                // نمایش دکمه send و تغییر به stop
-                $('#sendMessageBtn').show();
-                $('#voiceBtn').hide();
-                $('#soundwaveBtn').hide();
-                updateSendButtonState();
-                
-                // شبیه‌سازی پاسخ API
-                currentGenerationTimeout = setTimeout(() => {
-                    const assistantResponse = 'من پیام شما را دریافت کردم: "' + message + '"';
-                    addMessageToChat(currentChatId, assistantResponse, 'assistant');
+                // شبیه‌سازی ارسال پیام (معمولاً اینجا API call میشه)
+                setTimeout(() => {
+                    // ارسال موفق - اضافه کردن پیام به چت
+                    addMessageToChat(currentChatId, message, 'user');
                     renderMessages(currentChatId);
-                    console.log('API Response:', assistantResponse);
                     
-                    // برگرداندن حالت عادی
-                    isGenerating = false;
-                    currentGenerationTimeout = null;
+                    // مرحله 2: پیام ارسال شد - تغییر به Stop (در حال دریافت پاسخ)
+                    isSending = false;
+                    isGenerating = true;
                     updateSendButtonState();
-                }, 3000); // زمان بیشتر برای نمایش بهتر loading
+                    
+                    console.log('✅ پیام ارسال شد، در انتظار پاسخ...');
+                    
+                    // شبیه‌سازی دریافت پاسخ API
+                    currentGenerationTimeout = setTimeout(() => {
+                        const assistantResponse = 'من پیام شما را دریافت کردم: "' + message + '"';
+                        addMessageToChat(currentChatId, assistantResponse, 'assistant');
+                        renderMessages(currentChatId);
+                        console.log('API Response:', assistantResponse);
+                        
+                        // مرحله 3: پاسخ دریافت شد - برگشت به حالت عادی
+                        isGenerating = false;
+                        currentGenerationTimeout = null;
+                        updateSendButtonState();
+                    }, 3000); // زمان شبیه‌سازی پاسخ API
+                }, 800); // زمان شبیه‌سازی ارسال پیام (نمایش loading)
             }
         }
     }
@@ -834,18 +1099,37 @@ $(document).ready(function() {
     function updateSendButtonState() {
         const $sendBtn = $('#sendMessageBtn');
         
-        if (isGenerating) {
-            // تغییر به دکمه Stop
-            $sendBtn.html('<i class="bi bi-stop-fill" style="font-size: 20px; font-weight: bold;"></i>');
-            $sendBtn.css('border-radius', '8px'); // تغییر به مربع
+        if (isSending) {
+            // حالت 1: در حال ارسال پیام (Loading)
+            $sendBtn.html(`
+                <div class="spinner-border spinner-border-sm" role="status" style="width: 18px; height: 18px;">
+                    <span class="visually-hidden">در حال ارسال...</span>
+                </div>
+            `);
+            $sendBtn.css('border-radius', '50%');
+            $sendBtn.prop('disabled', true);
             $sendBtn.show();
             
             // غیرفعال کردن textarea
             $('#chatTextarea').prop('disabled', true).css('opacity', '0.6');
+            
+            console.log('🔄 حالت: در حال ارسال پیام...');
+        } else if (isGenerating) {
+            // حالت 2: در حال دریافت پاسخ (Stop)
+            $sendBtn.html('<i class="bi bi-stop-fill" style="font-size: 20px; font-weight: bold;"></i>');
+            $sendBtn.css('border-radius', '8px'); // تغییر به مربع
+            $sendBtn.prop('disabled', false);
+            $sendBtn.show();
+            
+            // غیرفعال کردن textarea
+            $('#chatTextarea').prop('disabled', true).css('opacity', '0.6');
+            
+            console.log('⏹️ حالت: در حال دریافت پاسخ (قابل توقف)');
         } else {
-            // برگرداندن به دکمه Send
+            // حالت 3: عادی (Send)
             $sendBtn.html('<i class="bi bi-arrow-up" style="font-size: 20px; font-weight: bold;"></i>');
             $sendBtn.css('border-radius', '50%'); // برگرداندن به دایره
+            $sendBtn.prop('disabled', false);
             $sendBtn.hide();
             
             // نمایش دکمه‌های صدا
@@ -854,11 +1138,18 @@ $(document).ready(function() {
             
             // فعال کردن textarea
             $('#chatTextarea').prop('disabled', false).css('opacity', '1');
+            
+            console.log('✅ حالت: عادی');
         }
     }
     
     // ارسال با کلیک روی دکمه
     $('#sendMessageBtn').on('click', function() {
+        // اگر در حال ارسال است، هیچ کاری نکن (دکمه disabled است)
+        if (isSending) {
+            return;
+        }
+        
         if (isGenerating) {
             // متوقف کردن تولید پاسخ
             if (currentGenerationTimeout) {
@@ -918,9 +1209,271 @@ $(document).ready(function() {
     
     // دکمه اشتراک‌گذاری
     $('#shareBtn').on('click', function() {
-        console.log('اشتراک‌گذاری گفت‌و‌گو');
-        // اینجا می‌توانید لینک اشتراک‌گذاری یا مودال را نمایش دهید
+        if (!currentChatId) {
+            alert('هنوز چتی ایجاد نشده است.');
+            return;
+        }
+        
+        // ساخت URL منحصر به فرد برای چت
+        const chatUrl = `${window.location.origin}${window.location.pathname}?chat=${currentChatId}`;
+        
+        // نمایش مودال اشتراک‌گذاری
+        showShareModal(chatUrl);
+        
+        console.log('✅ لینک اشتراک‌گذاری:', chatUrl);
     });
+    
+    function showShareModal(chatUrl) {
+        // ساخت مودال Bootstrap برای اشتراک‌گذاری
+        const modalHtml = `
+            <div class="modal fade" id="shareChatModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content" style="background-color: rgb(33, 33, 33); color: white;">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title fw-bold">اشتراک‌گذاری گفت‌وگو</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-3">لینک زیر را با دیگران به اشتراک بگذارید:</p>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control bg-dark text-white border-secondary" 
+                                       value="${chatUrl}" id="chatUrlInput" readonly>
+                                <button class="btn btn-primary" type="button" id="copyChatUrlBtn">
+                                    <i class="bi bi-clipboard"></i> کپی
+                                </button>
+                            </div>
+                            <div id="copySuccess" class="alert alert-success d-none" role="alert">
+                                <i class="bi bi-check-circle"></i> لینک با موفقیت کپی شد!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // حذف مودال قبلی اگر وجود داره
+        $('#shareChatModal').remove();
+        
+        // اضافه کردن مودال جدید
+        $('body').append(modalHtml);
+        
+        // نمایش مودال
+        const modal = new bootstrap.Modal(document.getElementById('shareChatModal'));
+        modal.show();
+        
+        // Event handler برای دکمه کپی
+        $('#copyChatUrlBtn').on('click', function() {
+            const urlInput = document.getElementById('chatUrlInput');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // برای موبایل
+            
+            // کپی به کلیپبورد
+            navigator.clipboard.writeText(chatUrl).then(function() {
+                // نمایش پیام موفقیت
+                $('#copySuccess').removeClass('d-none').fadeIn();
+                
+                // تغییر متن دکمه
+                $('#copyChatUrlBtn').html('<i class="bi bi-check"></i> کپی شد!');
+                
+                // بعد از 2 ثانیه برگردون
+                setTimeout(function() {
+                    $('#copySuccess').fadeOut();
+                    $('#copyChatUrlBtn').html('<i class="bi bi-clipboard"></i> کپی');
+                }, 2000);
+                
+                console.log('✅ لینک کپی شد');
+            }).catch(function(err) {
+                console.error('❌ خطا در کپی:', err);
+                alert('خطا در کپی لینک. لطفاً دستی کپی کنید.');
+            });
+        });
+    }
+    
+    // بارگذاری چت از URL
+    function loadChatFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatId = urlParams.get('chat');
+        
+        if (!chatId) {
+            console.log('📌 پارامتر chat در URL وجود ندارد');
+            return;
+        }
+        
+        console.log('🔍 جستجوی چت با ID:', chatId);
+        
+        // بررسی آماده بودن chatManager
+        if (!chatManager) {
+            console.error('❌ chatManager هنوز آماده نیست. تلاش دوباره...');
+            // تلاش دوباره بعد از 500 میلی‌ثانیه
+            setTimeout(loadChatFromUrl, 500);
+            return;
+        }
+        
+        const chat = chatManager.getChatById(chatId);
+        if (chat) {
+            currentChatId = chatId;
+            
+            // مخفی کردن صفحه اول
+            $('.startup-features').remove();
+            $('.chat-header').remove();
+            
+            // نمایش پیام‌های چت
+            renderMessages(chatId);
+            
+            // تنظیم استایل container
+            $('.chat-container').css({
+                'max-width': '900px',
+                'margin': '0 auto',
+                'padding': '20px'
+            });
+            
+            // نمایش دکمه share
+            $('#shareBtn').fadeIn(300);
+            
+            isFirstMessage = false;
+            
+            console.log('✅ چت از URL بارگذاری شد:', chatId);
+            console.log('📊 تعداد پیام‌ها:', chat.messages ? chat.messages.length : 0);
+        } else {
+            console.error('❌ چت با این ID پیدا نشد:', chatId);
+            console.log('📋 چت‌های موجود:', chatManager.getAll().map(c => c.id));
+            alert('چت مورد نظر پیدا نشد. ممکن است حذف شده باشد.');
+        }
+    }
+    
+    // بارگذاری چت هنگام لود صفحه - با تاخیر برای اطمینان از آماده بودن chatManager
+    setTimeout(function() {
+        loadChatFromUrl();
+    }, 300);
+    
+    // ================== سیستم Reply/Quote برای پاسخ‌های AI ==================
+    let selectedQuote = null;
+    
+    // نمایش popup هنگام انتخاب متن
+    $(document).on('mouseup', '.message-content', function(e) {
+        // کمی تاخیر برای اطمینان از تکمیل selection
+        setTimeout(function() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (selectedText.length > 0) {
+                // حذف popup قبلی
+                $('.quote-popup').remove();
+                
+                // مختصات انتخاب
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                // ساخت popup
+                const popup = $(`
+                    <div class="quote-popup">
+                        <button class="btn btn-sm btn-primary d-flex align-items-center gap-2">
+                            <i class="bi bi-chat-dots"></i>
+                            <span>از گپ بپرس</span>
+                        </button>
+                    </div>
+                `);
+                
+                // موقعیت popup
+                popup.css({
+                    position: 'fixed',
+                    top: rect.top - 50 + 'px',
+                    left: rect.left + (rect.width / 2) + 'px',
+                    transform: 'translateX(-50%)',
+                    zIndex: 9999
+                });
+                
+                $('body').append(popup);
+                
+                // ذخیره متن انتخاب شده
+                selectedQuote = {
+                    text: selectedText,
+                    messageId: $(e.target).closest('.message-item').data('message-id')
+                };
+                
+                // انیمیشن ورود
+                setTimeout(() => popup.addClass('show'), 10);
+                
+                console.log('📌 متن انتخاب شد:', selectedText.substring(0, 50) + '...');
+            } else {
+                // اگر انتخاب خالی شد، popup رو حذف کن
+                $('.quote-popup').remove();
+            }
+        }, 50);
+    });
+    
+    // کلیک روی دکمه popup
+    $(document).on('click', '.quote-popup button', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (selectedQuote) {
+            showReplyBox(selectedQuote.text);
+            $('.quote-popup').remove();
+            window.getSelection().removeAllRanges();
+        }
+    });
+    
+    // حذف popup با کلیک در جای دیگر
+    $(document).on('mousedown', function(e) {
+        if (!$(e.target).closest('.quote-popup').length && 
+            !$(e.target).closest('.message-content').length) {
+            $('.quote-popup').remove();
+            selectedQuote = null;
+        }
+    });
+    
+    // نمایش Reply Box
+    function showReplyBox(quotedText) {
+        // حذف reply box قبلی
+        $('.reply-box').remove();
+        
+        // ساخت reply box
+        const replyBox = $(`
+            <div class="reply-box">
+                <div class="reply-content">
+                    <div class="reply-header">
+                        <i class="bi bi-reply-fill"></i>
+                        <span>پاسخ به:</span>
+                    </div>
+                    <div class="reply-text">${escapeHtml(quotedText)}</div>
+                </div>
+                <button class="btn-close-reply" type="button">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        `);
+        
+        // اضافه کردن به بالای فرم
+        $('.input-wrapper').prepend(replyBox);
+        
+        // انیمیشن ورود
+        setTimeout(() => replyBox.addClass('show'), 10);
+        
+        // فوکوس روی textarea
+        $('#chatTextarea').focus();
+        
+        console.log('✅ Reply box نمایش داده شد');
+    }
+    
+    // حذف Reply Box
+    $(document).on('click', '.btn-close-reply', function() {
+        $('.reply-box').removeClass('show');
+        setTimeout(() => $('.reply-box').remove(), 300);
+        selectedQuote = null;
+    });
+    
+    // تابع escape HTML
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
 
     // کلیک روی چت هیستوری
     $(document).on('click', '.chat-item', function(e) {
@@ -1070,18 +1623,8 @@ $(document).ready(function() {
         }
     });
 
-    // Tools menu item click handlers
-    $('.tools-menu-item').click(function(e) {
-        e.stopPropagation();
-        
-        const toolName = $(this).find('span').text();
-        console.log('Tool selected:', toolName);
-        
-        // Close menu
-        $('#toolsMenu').removeClass('show');
-        
-        // You can add specific functionality for each tool here
-    });
+    // Tools menu item click handlers - حذف شده چون سیستم جدید در خط 279 پیاده‌سازی شده
+    // Event handler جدید از طریق delegation کار می‌کند
 
     // Search Dialog
     // دکمه جستجو در سایدبار
