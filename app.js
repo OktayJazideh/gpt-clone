@@ -1313,9 +1313,36 @@ $(document).ready(function() {
         if (chat) {
             currentChatId = chatId;
             
-            // مخفی کردن صفحه اول
+            // مخفی کردن صفحه اول و تایتل
             $('.startup-features').remove();
+            $('.startup-header').remove();
             $('.chat-header').remove();
+            
+            // نمایش container پیام‌ها
+            $('#chatMessagesContainer').show();
+            
+            // محاسبه right بر اساس وضعیت سایدبار
+            const sidebarWidth = $('.sidebar-drawer').hasClass('collapsed') ? 0 : 300;
+            
+            // انتقال فرم به پایین
+            $('.startup-container')
+                .addClass('chat-input-footer')
+                .css({
+                    'position': 'fixed',
+                    'bottom': '0',
+                    'right': sidebarWidth + 'px',
+                    'left': '0',
+                    'max-width': 'none',
+                    'margin': '0',
+                    'padding': '20px',
+                    'z-index': '100',
+                    'transition': 'right 0.2s ease'
+                });
+            
+            $('.input-suggestions-container').css({
+                'max-width': '900px',
+                'margin': '0 auto'
+            });
             
             // نمایش پیام‌های چت
             renderMessages(chatId);
@@ -1334,6 +1361,7 @@ $(document).ready(function() {
             
             console.log('✅ چت از URL بارگذاری شد:', chatId);
             console.log('📊 تعداد پیام‌ها:', chat.messages ? chat.messages.length : 0);
+            console.log('💬 آماده برای ادامه چت');
         } else {
             console.error('❌ چت با این ID پیدا نشد:', chatId);
             console.log('📋 چت‌های موجود:', chatManager.getAll().map(c => c.id));

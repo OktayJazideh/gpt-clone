@@ -111,7 +111,18 @@ $(document).ready(function() {
         }
 
         const chatId = $(this).data('chat-id');
-        loadChatMessages(chatId);
+        
+        // تشخیص اینکه در صفحه اصلی هستیم یا نه
+        const isMainPage = $('#chatMessagesContainer').length > 0 && $('.startup-container').length > 0;
+        
+        if (isMainPage) {
+            // اگر در صفحه اصلی هستیم، چت رو مستقیم لود کن
+            loadChatMessages(chatId);
+        } else {
+            // اگر در صفحه دیگری هستیم، به صفحه اصلی redirect کن با chat ID
+            window.location.href = `index.html?chat=${chatId}`;
+            console.log('🔄 انتقال به صفحه اصلی برای لود چت:', chatId);
+        }
     });
 
     /**

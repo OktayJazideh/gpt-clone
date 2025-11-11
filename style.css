@@ -17,6 +17,10 @@
     font-style: normal;
     font-display: swap;
 }
+a{
+    color: white;
+    text-decoration: none;
+}
 i{
     display: flex;
     justify-content: center;
@@ -2174,4 +2178,8 @@ body[data-theme="light"] .btn-close-reply:hover {
 body[data-theme="light"] #sendMessageBtn .spinner-border {
     border-color: rgba(255, 255, 255, 0.5);
     border-right-color: white;
+}
+body[data-theme="light"] a{
+    color: rgb(0, 0, 0);
+    text-decoration: none;
 }
