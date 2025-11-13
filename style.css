@@ -8,6 +8,28 @@
     font-display: swap;
 }
 
+/* Voice Chat Tips Banner */
+.voice-chat-banner {
+    background: rgba(0, 0, 0, 0.7);
+    color: #e5e7eb;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 0 0 12px 0;
+    font-size: 13px;
+}
+
+.voice-chat-banner .banner-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.voice-chat-banner .banner-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
 @font-face {
     font-family: 'vazir';
     src: url('vazir/Vazir-Bold.woff2') format('woff2'),
@@ -533,6 +555,10 @@ main{
     /* Hide original fixed chips */
     .input-suggestions-container .startup-features {
         display: none !important;
+    }
+
+    .chips{
+        display: flex !important;
     }
     
     /* Show mobile chips */
@@ -2234,4 +2260,140 @@ body[data-theme="light"] .file-size {
 body[data-theme="light"] a{
     color: rgb(0, 0, 0);
     text-decoration: none;
+}
+
+/* ==================== Voice Chat UI Styles ==================== */
+.voice-chat-ui {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 16px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    backdrop-filter: blur(10px);
+    animation: slideUp 0.3s ease-out;
+    transition: right 0.3s ease, left 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.voice-chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 24px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.voice-chat-close-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    padding: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.voice-chat-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: scale(1.1);
+}
+
+.voice-chat-status {
+    flex: 1;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.voice-chat-start-btn {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: #111827 !important;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.voice-chat-start-btn:hover {
+    background: #f9fafb !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.voice-chat-start-btn:active {
+    transform: translateY(0);
+}
+
+.voice-chat-start-btn.recording {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    animation: pulse 2s infinite;
+}
+
+.voice-chat-start-btn i {
+    color: inherit !important;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.6);
+    }
+}
+
+.voice-chat-start-btn.recording:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Light theme support */
+body[data-theme="light"] .voice-chat-container {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="light"] .voice-chat-close-btn {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+body[data-theme="light"] .voice-chat-close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+body[data-theme="light"] .voice-chat-status {
+    color: #1f2937;
 }

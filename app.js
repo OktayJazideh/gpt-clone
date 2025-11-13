@@ -6,6 +6,46 @@ $(document).ready(function() {
     // استفاده از chatHistoryManager جدید
     const chatManager = window.chatHistoryManager;
     
+    // ابزارهای کمکی نمایش چیپس‌ها
+    function hideChips() {
+        const startupFeatures = document.querySelector('.startup-features');
+        const mobileChips = document.querySelector('.mobile-chips');
+        if (startupFeatures) startupFeatures.style.setProperty('display', 'none', 'important');
+        if (mobileChips) mobileChips.style.setProperty('display', 'none', 'important');
+    }
+
+    function showChipsBasedOnViewport() {
+        const startupFeatures = document.querySelector('.startup-features');
+        const mobileChips = document.querySelector('.mobile-chips');
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            if (startupFeatures) startupFeatures.style.setProperty('display', 'none', 'important');
+            if (mobileChips) mobileChips.style.setProperty('display', 'block', 'important');
+        } else {
+            if (startupFeatures) startupFeatures.style.setProperty('display', 'flex', 'important');
+            if (mobileChips) mobileChips.style.setProperty('display', 'none', 'important');
+        }
+    }
+
+    // مدیریت نمایش چیپس‌ها بر اساس وضعیت چت
+    function updateChipsVisibility() {
+        const hasActiveChat = currentChatId && chatManager.getChatById(currentChatId) && 
+                             chatManager.getChatById(currentChatId).messages.length > 0;
+        if (hasActiveChat) {
+            hideChips();
+        } else {
+            showChipsBasedOnViewport();
+        }
+        console.log('چیپس‌ها آپدیت شدند - چت فعال:', hasActiveChat);
+    }
+
+    // ================== Voice Chat Mode Variables ==================
+    let isVoiceChatMode = false;
+    let isVoiceChatRecording = false;
+    let isVoiceChatPaused = false; // پاز/ادامه برای چت صوتی
+    let voiceInactivityTimer = null; // تایمر سکوت برای تشخیص پایان صحبت
+    let voiceChatTipsDismissed = false; // وضعیت نمایش بنر نکات چت صوتی
+    
     // ================== Speech Recognition Setup ==================
     let recognition = null;
     let isRecording = false;
@@ -25,7 +65,7 @@ $(document).ready(function() {
         
         // رویداد شروع ضبط
         recognition.onstart = function() {
-            console.log('🎤 ضبط صدا شروع شد');
+            console.log(' ضبط صدا شروع شد');
             isRecording = true;
             updateVoiceButtonState();
         };
@@ -44,10 +84,28 @@ $(document).ready(function() {
                 }
             }
             
-            // نمایش متن در textarea
-            const $textarea = $('#chatTextarea');
-            $textarea.val(finalTranscript + interimTranscript);
-            $textarea.trigger('input'); // برای آپدیت ارتفاع
+            // اگر در حالت چت صوتی هستیم، فقط متن را نمایش بده
+            if (isVoiceChatMode) {
+                const currentText = (finalTranscript + interimTranscript).trim();
+                $('#voiceChatStatusText').text(currentText || 'در حال شنیدن...');
+                ensurePendingVoiceMessageBubble();
+                updatePendingVoiceMessageBubble(currentText || 'در حال شنیدن...', true);
+                // اولین صحبت: محو کردن بنر نکات
+                if (!voiceChatTipsDismissed && currentText.length > 0) {
+                    voiceChatTipsDismissed = true;
+                    $('#voiceChatTipsBanner').fadeOut(200);
+                }
+                // زمان‌سنج سکوت برای تشخیص پایان صحبت
+                if (voiceInactivityTimer) clearTimeout(voiceInactivityTimer);
+                voiceInactivityTimer = setTimeout(() => {
+                    autoFinalizeVoiceUtterance();
+                }, 1500);
+            } else {
+                // نمایش متن در textarea
+                const $textarea = $('#chatTextarea');
+                $textarea.val(finalTranscript + interimTranscript);
+                $textarea.trigger('input'); // برای آپدیت ارتفاع
+            }
             
             console.log('📝 متن شناسایی شده:', finalTranscript + interimTranscript);
         };
@@ -81,6 +139,15 @@ $(document).ready(function() {
             console.log('🛑 ضبط صدا متوقف شد');
             isRecording = false;
             updateVoiceButtonState();
+            // اگر در حالت چت صوتی هستیم و پاز نیستیم، مجدد شروع به گوش دادن کن
+            if (isVoiceChatMode && isVoiceChatRecording && !isVoiceChatPaused) {
+                try {
+                    recognition.start();
+                    console.log('🔁 شروع مجدد شنیدن برای چت صوتی');
+                } catch (e) {
+                    console.warn('عدم امکان شروع مجدد بلافاصله:', e);
+                }
+            }
         };
     } else {
         console.warn('⚠️ مرورگر شما از Web Speech API پشتیبانی نمی‌کند');
@@ -212,10 +279,411 @@ $(document).ready(function() {
         }
     });
     
-    // کلیک روی دکمه Voice Chat (soundwave) - نمایش مودال ارتقا
+    // ================== Voice Chat Mode ==================
+    // تنظیم موقعیت UI چت صوتی بر اساس سایدبار
+    function updateVoiceChatPosition() {
+        const sidebarWidth = $('.sidebar-drawer').hasClass('collapsed') ? 0 : 300;
+        const $voiceChatUI = $('#voiceChatUI');
+        
+        if ($(window).width() > 768) {
+            // در دسکتاپ
+            $voiceChatUI.css('right', sidebarWidth + 'px');
+        } else {
+            // در موبایل
+            $voiceChatUI.css('right', '0');
+        }
+    }
+    
+    // فعال کردن حالت چت صوتی
+    function activateVoiceChatMode() {
+        isVoiceChatMode = true;
+        
+        // مخفی کردن فرم اصلی
+        $('.default-input').hide();
+        
+        // بررسی اینکه آیا قبلاً چتی داشتیم یا نه
+        const hasExistingChat = currentChatId && chatManager.getChatById(currentChatId) && 
+                                chatManager.getChatById(currentChatId).messages.length > 0;
+        
+        if (hasExistingChat) {
+            // اگر چت داریم، هدر و چیپس‌ها رو مخفی کن
+            const startupHeader = document.querySelector('.startup-header');
+            if (startupHeader) startupHeader.style.setProperty('display', 'none', 'important');
+            hideChips();
+            // پیام‌ها رو نشون بده
+            $('#chatMessagesContainer').show();
+            renderMessages(currentChatId);
+        } else {
+            // اگر چت نداریم، هدر و چیپس‌ها رو نگه دار
+            // فقط container پیام‌ها رو نشون بده (خالی)
+            $('#chatMessagesContainer').show().empty();
+        }
+        
+        // نمایش UI چت صوتی
+        $('#voiceChatUI').fadeIn(300);
+        
+        // نمایش دکمه اشتراک‌گذاری
+        $('#shareBtn').fadeIn(300);
+        
+        // نمایش بنر نکات چت صوتی
+        voiceChatTipsDismissed = false;
+        $('#voiceChatTipsBanner').stop(true, true).fadeIn(200);
+        
+        // تنظیم موقعیت بر اساس سایدبار
+        updateVoiceChatPosition();
+        
+        console.log('✅ حالت چت صوتی فعال شد');
+    }
+    
+    // غیرفعال کردن حالت چت صوتی
+    function deactivateVoiceChatMode() {
+        isVoiceChatMode = false;
+        
+        // توقف ضبط اگر در حال ضبط است
+        if (isVoiceChatRecording) {
+            stopVoiceChatRecording();
+        }
+        
+        // مخفی کردن UI چت صوتی
+        $('#voiceChatUI').fadeOut(300);
+        // مخفی کردن بنر نکات
+        $('#voiceChatTipsBanner').hide();
+        voiceChatTipsDismissed = false;
+        
+        // نمایش فرم اصلی
+        $('.default-input').fadeIn(300);
+        
+        // بررسی وضعیت چت
+        const hasChat = currentChatId && chatManager.getChatById(currentChatId) && 
+                        chatManager.getChatById(currentChatId).messages.length > 0;
+        
+        if (!hasChat) {
+            // اگر چتی وجود ندارد، همه چیز رو برگردون به حالت اول
+            $('#shareBtn').hide();
+            
+            const startupHeader = document.querySelector('.startup-header');
+            if (startupHeader) startupHeader.style.removeProperty('display');
+            showChipsBasedOnViewport();
+            
+            $('#chatMessagesContainer').hide();
+            
+            // برگرداندن فرم به حالت عادی
+            $('.startup-container')
+                .removeClass('chat-input-footer')
+                .css({
+                    'position': '',
+                    'bottom': '',
+                    'right': '',
+                    'left': '',
+                    'max-width': '',
+                    'margin': '',
+                    'padding': '',
+                    'z-index': '',
+                    'transition': ''
+                });
+            
+            $('.input-suggestions-container')
+                .css({
+                    'max-width': '',
+                    'margin': ''
+                });
+        } else {
+            // اگر چت داریم، هدر و چیپس‌ها رو مخفی کن و چت رو نشون بده
+            const startupHeader = document.querySelector('.startup-header');
+            if (startupHeader) startupHeader.style.setProperty('display', 'none', 'important');
+            hideChips();
+            
+            $('#chatMessagesContainer').show();
+            
+            // فرم رو در حالت transformed نگه دار
+            const sidebarWidth = $('.sidebar-drawer').hasClass('collapsed') ? 0 : 300;
+            $('.startup-container')
+                .addClass('chat-input-footer')
+                .css({
+                    'position': 'fixed',
+                    'bottom': '0',
+                    'right': sidebarWidth + 'px',
+                    'left': '0',
+                    'max-width': 'none',
+                    'margin': '0',
+                    'padding': '20px',
+                    'z-index': '100',
+                    'transition': 'right 0.2s ease'
+                });
+            
+            $('.input-suggestions-container')
+                .css({
+                    'max-width': '900px',
+                    'margin': '0 auto'
+                });
+        }
+        
+        console.log('❌ حالت چت صوتی غیرفعال شد');
+    }
+    
+    // شروع ضبط در حالت چت صوتی
+    function startVoiceChatRecording() {
+        if (!recognition) {
+            alert('مرورگر شما از تبدیل صدا به متن پشتیبانی نمی‌کند.\n\nلطفاً از Chrome، Edge یا Safari استفاده کنید.');
+            return;
+        }
+        
+        isVoiceChatRecording = true;
+        isVoiceChatPaused = false;
+        finalTranscript = '';
+        interimTranscript = '';
+        
+        // تغییر UI
+        const $btn = $('#startVoiceChatBtn');
+        $btn.addClass('recording');
+        $btn.find('span').text('پاز');
+        $btn.find('i').removeClass('bi-mic-fill bi-play-fill').addClass('bi-pause-fill');
+        
+        $('#voiceChatStatusText').text('در حال شنیدن...');
+        ensurePendingVoiceMessageBubble();
+        updatePendingVoiceMessageBubble('در حال شنیدن...', true);
+        
+        try {
+            recognition.start();
+            console.log('🎤 شروع ضبط چت صوتی');
+        } catch (error) {
+            console.error('خطا در شروع ضبط:', error);
+            stopVoiceChatRecording();
+        }
+    }
+    
+    // توقف ضبط در حالت چت صوتی
+    function stopVoiceChatRecording() {
+        if (recognition && isVoiceChatRecording) {
+            recognition.stop();
+            
+            isVoiceChatRecording = false;
+            isVoiceChatPaused = false;
+            if (voiceInactivityTimer) {
+                clearTimeout(voiceInactivityTimer);
+                voiceInactivityTimer = null;
+            }
+            
+            // برگرداندن UI به حالت عادی
+            const $btn = $('#startVoiceChatBtn');
+            $btn.removeClass('recording');
+            $btn.find('span').text('شروع چت صوتی');
+            $btn.find('i').removeClass('bi-pause-fill bi-play-fill').addClass('bi-mic-fill');
+            
+            $('#voiceChatStatusText').text('چت صوتی');
+            
+            console.log('⏹️ توقف ضبط چت صوتی');
+            
+            // ارسال پیام اگر متنی وجود دارد
+            if (finalTranscript.trim().length > 0) {
+                sendVoiceMessage(finalTranscript.trim());
+            }
+            clearPendingVoiceMessageBubble();
+            finalTranscript = '';
+            interimTranscript = '';
+        }
+    }
+
+    // پاز کردن شنیدن بدون خاتمه
+    function pauseVoiceChatRecording() {
+        if (!isVoiceChatRecording || isVoiceChatPaused) return;
+        isVoiceChatPaused = true;
+        try { recognition.stop(); } catch (e) {}
+        const $btn = $('#startVoiceChatBtn');
+        $btn.removeClass('recording');
+        $btn.find('span').text('ادامه');
+        $btn.find('i').removeClass('bi-pause-fill bi-mic-fill').addClass('bi-play-fill');
+        $('#voiceChatStatusText').text('پاز شد - برای ادامه کلیک کنید');
+        if (voiceInactivityTimer) { clearTimeout(voiceInactivityTimer); voiceInactivityTimer = null; }
+    }
+
+    // ادامه شنیدن بعد از پاز
+    function resumeVoiceChatRecording() {
+        if (!isVoiceChatRecording || !isVoiceChatPaused) return;
+        isVoiceChatPaused = false;
+        const $btn = $('#startVoiceChatBtn');
+        $btn.addClass('recording');
+        $btn.find('span').text('پاز');
+        $btn.find('i').removeClass('bi-play-fill bi-mic-fill').addClass('bi-pause-fill');
+        $('#voiceChatStatusText').text('در حال شنیدن...');
+        ensurePendingVoiceMessageBubble();
+        updatePendingVoiceMessageBubble('در حال شنیدن...', true);
+        try { recognition.start(); } catch (e) { console.warn('عدم امکان ادامه بلافاصله:', e); }
+    }
+
+    // حباب پیام در انتظار (هنگام صحبت کردن)
+    function ensurePendingVoiceMessageBubble() {
+        const $container = $('#chatMessagesContainer');
+        if ($container.find('.pending-voice-msg').length === 0) {
+            const bubbleHtml = `
+                <div class="message-item mb-4 d-flex justify-content-start pending-voice-msg">
+                    <div style="max-width: 70%;">
+                        <div class="message-bubble rounded-5" style="background-color: rgb(47, 47, 47); padding:10px 20px; color: white; opacity: 0.85;">
+                            <div class="message-content" id="pendingVoiceMsgContent" style="white-space: pre-wrap; word-wrap: break-word;"></div>
+                        </div>
+                    </div>
+                </div>`;
+            $container.append(bubbleHtml);
+            // اسکرول به پایین
+            setTimeout(() => { $container.scrollTop($container[0].scrollHeight); }, 50);
+        }
+    }
+
+    function updatePendingVoiceMessageBubble(text, listening) {
+        const $content = $('#pendingVoiceMsgContent');
+        if ($content.length) {
+            const display = text && text.length ? text : (listening ? 'در حال شنیدن...' : 'در انتظار...');
+            $content.text(display);
+        }
+    }
+
+    function clearPendingVoiceMessageBubble() {
+        $('#chatMessagesContainer .pending-voice-msg').remove();
+    }
+
+    // اتمام خودکار یک جمله پس از سکوت
+    function autoFinalizeVoiceUtterance() {
+        if (!isVoiceChatMode || !isVoiceChatRecording || isVoiceChatPaused) return;
+        const message = (finalTranscript + ' ' + interimTranscript).trim();
+        if (message.length === 0) return;
+        console.log('🤐 سکوت تشخیص داده شد - ارسال پیام:', message);
+        try { recognition.stop(); } catch (e) {}
+        // UI وضعیت
+        $('#voiceChatStatusText').html('<i class="bi bi-three-dots"></i> در حال ارسال...');
+        sendVoiceMessage(message);
+        clearPendingVoiceMessageBubble();
+        finalTranscript = '';
+        interimTranscript = '';
+        // پس از onend دوباره شروع می‌شود چون isVoiceChatRecording=true و پاز=false است
+    }
+    
+    // ارسال پیام صوتی
+    function sendVoiceMessage(message) {
+        console.log('📤 ارسال پیام صوتی:', message);
+        
+        // اگر چت فعلی وجود ندارد، چت جدید بساز
+        if (!currentChatId) {
+            const newChat = createNewChat(message);
+            if (!newChat) {
+                console.error('خطا در ساخت چت جدید');
+                return;
+            }
+            currentChatId = newChat.id;
+            
+            // مخفی کردن چیپس‌ها و هدر (به جای حذف)
+            hideChips();
+            const startupHeader = document.querySelector('.startup-header');
+            if (startupHeader) startupHeader.style.setProperty('display', 'none', 'important');
+            
+            // نمایش container پیام‌ها
+            $('#chatMessagesContainer').show();
+            
+            // محاسبه right بر اساس وضعیت سایدبار
+            const sidebarWidth = $('.sidebar-drawer').hasClass('collapsed') ? 0 : 300;
+            
+            // انتقال فرم به پایین
+            $('.startup-container')
+                .addClass('chat-input-footer')
+                .css({
+                    'position': 'fixed',
+                    'bottom': '0',
+                    'right': sidebarWidth + 'px',
+                    'left': '0',
+                    'max-width': 'none',
+                    'margin': '0',
+                    'padding': '20px',
+                    'z-index': '100',
+                    'transition': 'right 0.2s ease'
+                });
+            
+            $('.input-suggestions-container')
+                .css({
+                    'max-width': '900px',
+                    'margin': '0 auto'
+                });
+            
+            // آپدیت وضعیت چیپس‌ها
+            updateChipsVisibility();
+            
+            // نمایش دکمه اشتراک‌گذاری
+            $('#shareBtn').fadeIn(300);
+            
+            // آپدیت هیستوری چت در سایدبار
+            renderChatHistory();
+        }
+        
+        // اضافه کردن پیام کاربر
+        addMessageToChat(currentChatId, message, 'user');
+        renderMessages(currentChatId);
+        
+        // آپدیت هیستوری چت در سایدبار
+        renderChatHistory();
+        
+        // Scroll به پایین
+        setTimeout(() => {
+            const $container = $('#chatMessagesContainer');
+            $container.scrollTop($container[0].scrollHeight);
+        }, 100);
+        
+        // نمایش در حال تایپ...
+        $('#voiceChatStatusText').html('<i class="bi bi-three-dots"></i> در حال پاسخ...');
+        
+        // شبیه‌سازی پاسخ هوش مصنوعی
+        setTimeout(() => {
+            const aiResponse = 'این یک پاسخ نمونه به پیام شما است: "' + message + '"';
+            addMessageToChat(currentChatId, aiResponse, 'assistant');
+            renderMessages(currentChatId);
+            
+            // آپدیت هیستوری چت در سایدبار
+            renderChatHistory();
+            
+            // Scroll به پایین
+            setTimeout(() => {
+                const $container = $('#chatMessagesContainer');
+                $container.scrollTop($container[0].scrollHeight);
+            }, 100);
+            
+            // بازگرداندن متن وضعیت
+            $('#voiceChatStatusText').text('چت صوتی');
+            
+            // پاک کردن متن ضبط شده
+            finalTranscript = '';
+            interimTranscript = '';
+        }, 2000);
+    }
+    
+    // کلیک روی دکمه Voice Chat (soundwave) - فعال کردن حالت چت صوتی
     $('#soundwaveBtn').on('click', function() {
-        const voiceChatModal = new bootstrap.Modal(document.getElementById('voiceChatModal'));
-        voiceChatModal.show();
+        activateVoiceChatMode();
+    });
+    
+    // کلیک روی دکمه خروج از چت صوتی
+    $('#exitVoiceChatBtn').on('click', function() {
+        deactivateVoiceChatMode();
+    });
+    
+    // کلیک روی دکمه شروع/توقف چت صوتی
+    $('#startVoiceChatBtn').on('click', function() {
+        if (!isVoiceChatRecording) {
+            startVoiceChatRecording();
+            return;
+        }
+        // در حال ضبط هستیم: پاز/ادامه
+        if (isVoiceChatPaused) {
+            resumeVoiceChatRecording();
+        } else {
+            pauseVoiceChatRecording();
+        }
+    });
+
+    // کلیک روی لینک تنظیمات گفتگوی صوتی در بنر
+    $(document).on('click', '#voiceChatSettingsLink', function(e) {
+        e.preventDefault();
+        const el = document.getElementById('settingsModal');
+        if (el && window.bootstrap && bootstrap.Modal) {
+            const modal = new bootstrap.Modal(el);
+            modal.show();
+        }
     });
     
     // سیستم انتخاب ابزار و چیپس‌ها
@@ -932,7 +1400,7 @@ $(document).ready(function() {
         if (!clipboardData || !clipboardData.items) return;
         
         const items = clipboardData.items;
-        for (let i = 0; i < items.length; i++) {
+        for (let i = 0; i <items.length; i++) {
             const it = items[i];
             if (it.kind === 'file') {
                 let file = it.getAsFile();
@@ -1068,9 +1536,12 @@ $(document).ready(function() {
                 // ایجاد چت جدید
                 createNewChat(message);
                 
-                // حذف چیپس‌ها و هدر
-                $('.startup-features').remove();
-                $('.startup-header').remove();
+                // مخفی کردن چیپس‌ها و هدر (به جای حذف)
+                hideChips();
+                const startupHeader = document.querySelector('.startup-header');
+                if (startupHeader) {
+                    startupHeader.style.setProperty('display', 'none', 'important');
+                }
                 
                 // نمایش container پیام‌ها
                 $('#chatMessagesContainer').show();
@@ -1101,6 +1572,9 @@ $(document).ready(function() {
                 
                 // به‌روزرسانی هیستوری
                 renderChatHistory();
+                
+                // آپدیت وضعیت چیپس‌ها
+                updateChipsVisibility();
                 
                 // نمایش دکمه اشتراک‌گذاری
                 $('#shareBtn').fadeIn(300);
@@ -1578,11 +2052,118 @@ $(document).ready(function() {
             return;
         }
         
-        const chatTitle = $(this).find('.chat-item-text').text();
-        console.log('باز کردن چت:', chatTitle);
-        // اینجا می‌تونی چت رو باز کنی
+        const chatId = $(this).data('chat-id');
+        console.log('باز کردن چت:', chatId);
+        
+        // اگر در حالت چت صوتی هستیم، از آن خارج شو
+        if (isVoiceChatMode) {
+            deactivateVoiceChatMode();
+        }
+        
+        // تنظیم چت فعلی
+        currentChatId = chatId;
+        
+        // مخفی کردن فقط هدر و چیپس‌ها، نه کل startup container
+        $('.startup-header').hide();
+        $('.startup-features').hide();
+        $('.mobile-chips').hide();
+        
+        // نمایش container پیام‌ها
+        $('#chatMessagesContainer').show();
+        
+        // رندر پیام‌های چت
+        renderMessages(chatId);
+        
+        // نمایش فرم ورودی
+        $('.default-input').show();
+        
+        // نمایش دکمه share
+        $('#shareBtn').fadeIn(300);
+        
+        // بستن سایدبار در موبایل
+        if ($(window).width() <= 768) {
+            $('.sidebar-drawer').addClass('collapsed');
+            $('#sidebarOverlay').removeClass('show');
+        }
     });
 
+    // دکمه گفت‌وگو جدید
+    $('#newChatBtn').on('click', function() {
+        console.log('شروع گفت‌وگوی جدید');
+        
+        // اگر در حالت چت صوتی هستیم، از آن خارج شو
+        if (isVoiceChatMode) {
+            deactivateVoiceChatMode();
+        }
+        
+        // ریست کردن چت فعلی
+        currentChatId = null;
+        
+        // ریست کردن وضعیت اولین پیام
+        isFirstMessage = true;
+        
+        // مخفی کردن container پیام‌ها
+        $('#chatMessagesContainer').hide().empty();
+        
+        // نمایش کل startup container و تمام اجزای آن
+        $('.startup-container').show();
+        
+        const startupHeader = document.querySelector('.startup-header');
+        if (startupHeader) {
+            startupHeader.style.removeProperty('display');
+        }
+        
+        const startupFeatures = document.querySelector('.startup-features');
+        if (startupFeatures) {
+            // اطمینان از نمایش چیپس‌ها
+            startupFeatures.style.setProperty('display', 'flex', 'important');
+        }
+        
+        const mobileChips = document.querySelector('.mobile-chips');
+        if (mobileChips) {
+            mobileChips.style.setProperty('display', 'block', 'important');
+        }
+        
+        // ریست کردن استایل‌های startup container به حالت اولیه
+        $('.startup-container')
+            .removeClass('chat-input-footer')
+            .css({
+                'position': '',
+                'bottom': '',
+                'right': '',
+                'left': '',
+                'max-width': '',
+                'margin': '',
+                'padding': '',
+                'z-index': ''
+            });
+        
+        $('.input-suggestions-container').css({
+            'max-width': '',
+            'margin': ''
+        });
+        
+        // نمایش فرم ورودی
+        $('.default-input').show();
+        
+        // پاک کردن textarea
+        $('#chatTextarea').val('');
+        
+        // مخفی کردن دکمه share
+        $('#shareBtn').hide();
+        
+        // بستن سایدبار در موبایل
+        if ($(window).width() <= 768) {
+            $('.sidebar-drawer').addClass('collapsed');
+            $('#sidebarOverlay').removeClass('show');
+        }
+        
+        // آپدیت وضعیت چیپس‌ها
+        updateChipsVisibility();
+        
+        console.log('✅ صفحه اصلی بازیابی شد');
+    });
+    
     // کلیک روی ارتقا بسته
     $('.upgrade-section').on('click', function() {
         console.log('باز کردن صفحه ارتقا');
@@ -1610,6 +2191,9 @@ $(document).ready(function() {
                 $('.chat-input-footer').css('right', '300px');
                 $('#desktopSidebarToggle').hide();
             }
+            
+            // تنظیم موقعیت UI چت صوتی
+            updateVoiceChatPosition();
         }
     });
     
@@ -1624,6 +2208,9 @@ $(document).ready(function() {
             $('.main-content').css('margin-right', '300px');
             $('.chat-input-footer').css('right', '300px');
         }
+        
+        // تنظیم موقعیت UI چت صوتی
+        updateVoiceChatPosition();
     });
     
     // Mobile Menu Icon Toggle
@@ -1644,6 +2231,9 @@ $(document).ready(function() {
             $('.main-content').css('margin-right', '0');
             $('.chat-input-footer').css('right', '0');
         }
+        
+        // تنظیم موقعیت UI چت صوتی
+        updateVoiceChatPosition();
     });
     
     // بستن سایدبار با کلیک روی overlay
@@ -1657,6 +2247,9 @@ $(document).ready(function() {
             $('.main-content').css('margin-right', '0');
             $('.chat-input-footer').css('right', '0');
         }
+        
+        // تنظیم موقعیت UI چت صوتی
+        updateVoiceChatPosition();
     });
 
     // Model Menu Toggle
@@ -1905,6 +2498,9 @@ $(document).ready(function() {
             $('.main-content').css('margin-right', '0');
             $('.chat-input-footer').css('right', '0');
         }
+        
+        // تنظیم موقعیت UI چت صوتی
+        updateVoiceChatPosition();
     });
 
     // === User Menu Functions ===
@@ -2532,6 +3128,9 @@ $(document).ready(function() {
             $('#sidebarToggle').hide();
             $('#mobileMenuIcon').hide();
         }
+        
+        // تنظیم موقعیت UI چت صوتی
+        updateVoiceChatPosition();
     }
     
     // اجرای چک در شروع

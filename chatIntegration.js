@@ -138,10 +138,11 @@ $(document).ready(function() {
 
         currentLoadedChatId = chatId;
 
-        // پاک کردن صفحه اگر هنوز در حالت اولیه است
+        // مخفی کردن صفحه اگر هنوز در حالت اولیه است
         if ($('.startup-features').length > 0) {
-            $('.startup-features').remove();
-            $('.startup-header').remove();
+            $('.startup-features').removeClass('d-flex').addClass('d-none');
+            $('.startup-header').hide();
+            $('.mobile-chips').removeClass('d-flex').addClass('d-none');
             $('#chatMessagesContainer').show();
             
             // انتقال فرم به پایین
@@ -171,6 +172,11 @@ $(document).ready(function() {
         // هایلایت کردن چت فعال
         $('.chat-item').removeClass('bg-primary bg-opacity-10');
         $(`.chat-item[data-chat-id="${chatId}"]`).addClass('bg-primary bg-opacity-10');
+
+        // آپدیت وضعیت چیپس‌ها
+        if (window.updateChipsVisibility) {
+            window.updateChipsVisibility();
+        }
 
         console.log('✅ چت لود شد:', chat.title, '- تعداد پیام‌ها:', chat.messages.length);
     }
