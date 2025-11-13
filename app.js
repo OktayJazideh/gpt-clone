@@ -806,6 +806,22 @@ $(document).ready(function() {
         const fileSize = (file.size / 1024).toFixed(2);
         const fileName = file.name.length > 20 ? file.name.substring(0, 17) + '...' : file.name;
         
+        console.log('🖼️ فایل دریافتی:', {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            isImage: file.type.startsWith('image/')
+        });
+        
+        // تشخیص نوع فایل با لاگ更强
+        const isImage = file.type.startsWith('image/');
+        console.log('🔍检测结果:', {
+            fileStartsWith: file.type ? file.type.substring(0, 10) : 'null',
+            isImage: isImage,
+            willUseImg: isImage,
+            willUseIcon: !isImage
+        });
+        
         let fileIcon = 'bi-file-earmark';
         if (file.type.startsWith('image/')) fileIcon = 'bi-file-image';
         else if (file.type.startsWith('video/')) fileIcon = 'bi-file-play';
@@ -813,19 +829,50 @@ $(document).ready(function() {
         else if (file.type.includes('word')) fileIcon = 'bi-file-word';
         else if (file.type.includes('excel') || file.type.includes('spreadsheet')) fileIcon = 'bi-file-excel';
         
-        const fileHTML = `
-            <div class="file-item rounded-3 p-2 d-flex align-items-center gap-2" data-file-id="${fileId}">
-                <i class="bi ${fileIcon} fs-5"></i>
-                <div class="file-info">
-                    <div class="file-name text-white" style="font-size: 0.85rem;">${fileName}</div>
-                    <div class="file-size text-muted" style="font-size: 0.75rem;">${fileSize} KB</div>
+        let previewUrl = null;
+        let fileHTML = '';
+        
+        if (isImage) {
+            // ساخت thumbnail برای تصویر
+            previewUrl = URL.createObjectURL(file);
+            console.log('🔗 preview URL ساخته شد:', previewUrl);
+            
+            fileHTML = `
+                <div class="file-item rounded-3 p-2 d-flex align-items-center gap-2" data-file-id="${fileId}" data-thumb-url="${previewUrl}">
+                    <div class="file-thumb-wrap">
+                        <img src="${previewUrl}" alt="preview" class="file-thumb" />
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name text-white" style="font-size: 0.85rem;">${fileName}</div>
+                        <div class="file-size text-muted" style="font-size: 0.75rem;">${fileSize} KB</div>
+                    </div>
+                    <button class="btn btn-sm btn-close btn-close-white ms-auto remove-file" type="button"></button>
                 </div>
-                <button class="btn btn-sm btn-close btn-close-white ms-auto remove-file" type="button"></button>
-            </div>
-        `;
+            `;
+            
+            console.log('📝 HTML تصویر ساخته شد');
+            console.log('🖼️ تگ img استفاده شد:', fileHTML.includes('<img'));
+        } else {
+            // سایر فایل‌ها با آیکون
+            fileHTML = `
+                <div class="file-item rounded-3 p-2 d-flex align-items-center gap-2" data-file-id="${fileId}">
+                    <i class="bi ${fileIcon} fs-5"></i>
+                    <div class="file-info">
+                        <div class="file-name text-white" style="font-size: 0.85rem;">${fileName}</div>
+                        <div class="file-size text-muted" style="font-size: 0.75rem;">${fileSize} KB</div>
+                    </div>
+                    <button class="btn btn-sm btn-close btn-close-white ms-auto remove-file" type="button"></button>
+                </div>
+            `;
+            
+            console.log('📝 HTML فایل غیرتصویری ساخته شد');
+            console.log('📄 تگ i استفاده شد:', fileHTML.includes('<i'));
+        }
         
         $('.files-preview').append(fileHTML);
-        attachedFiles.push({ id: fileId, file: file });
+        attachedFiles.push({ id: fileId, file: file, previewUrl });
+        
+        console.log('✅ فایل به لیست اضافه شد. تعداد کل:', attachedFiles.length);
     }
 
     // حذف فایل
@@ -833,6 +880,11 @@ $(document).ready(function() {
         const fileItem = $(this).closest('.file-item');
         const fileId = fileItem.data('file-id');
         
+        // آزادسازی URL پیش‌نمایش در صورت وجود
+        const item = attachedFiles.find(f => f.id === fileId);
+        if (item && item.previewUrl) {
+            try { URL.revokeObjectURL(item.previewUrl); } catch (e) {}
+        }
         attachedFiles = attachedFiles.filter(f => f.id !== fileId);
         fileItem.remove();
         
@@ -870,14 +922,26 @@ $(document).ready(function() {
         }
     });
 
-    // Paste
+    // Paste فقط در ناحیه ورودی چت
     $(document).on('paste', function(e) {
-        const items = e.originalEvent.clipboardData.items;
+        const $target = $(e.target);
+        const isInInputArea = $target.closest('.input-wrapper').length > 0 || $target.is('#chatTextarea');
+        if (!isInInputArea) return;
         
+        const clipboardData = e.originalEvent.clipboardData;
+        if (!clipboardData || !clipboardData.items) return;
+        
+        const items = clipboardData.items;
         for (let i = 0; i < items.length; i++) {
-            if (items[i].kind === 'file') {
-                const file = items[i].getAsFile();
+            const it = items[i];
+            if (it.kind === 'file') {
+                let file = it.getAsFile();
                 if (file) {
+                    // اگر نام ندارد (مثل اسکرین‌شات)، یک نام پیش‌فرض بساز
+                    if (!file.name || file.name === 'image.png') {
+                        const ext = (file.type && file.type.split('/')[1]) || 'png';
+                        file = new File([file], `pasted-${Date.now()}.${ext}`, { type: file.type || 'image/png' });
+                    }
                     displayFile(file);
                 }
             }
@@ -1055,6 +1119,10 @@ $(document).ready(function() {
                 
                 // پاک کردن فرم
                 $('.input-wrapper textarea').val('');
+                // آزادسازی تمام URL های پیش‌نمایش قبل از پاکسازی
+                try {
+                    attachedFiles.forEach(f => { if (f && f.previewUrl) { URL.revokeObjectURL(f.previewUrl); } });
+                } catch (e) {}
                 attachedFiles = [];
                 $('.files-preview').remove();
                 clearSelectedTool(); // پاک کردن ابزار انتخاب شده

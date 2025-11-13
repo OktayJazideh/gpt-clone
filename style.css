@@ -1976,45 +1976,6 @@ body[data-theme="light"] #shareChatModal .btn-close {
     filter: invert(1);
 }
 
-/* File Item Styling */
-.file-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease;
-    max-width: 300px;
-}
-
-.file-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.file-item .remove-file {
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
-}
-
-.file-item .remove-file:hover {
-    opacity: 1;
-}
-
-body[data-theme="light"] .file-item {
-    background: rgba(0, 0, 0, 0.03);
-    border-color: rgba(0, 0, 0, 0.1);
-}
-
-body[data-theme="light"] .file-item:hover {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.15);
-}
-
-body[data-theme="light"] .file-name {
-    color: #1f2937 !important;
-}
-
-body[data-theme="light"] .file-size {
-    color: #6b7280 !important;
-}
 
 /* ================== Quote Popup ================== */
 .quote-popup {
@@ -2178,6 +2139,97 @@ body[data-theme="light"] .btn-close-reply:hover {
 body[data-theme="light"] #sendMessageBtn .spinner-border {
     border-color: rgba(255, 255, 255, 0.5);
     border-right-color: white;
+}
+
+/* ================== File Thumbnail Styles ================== */
+.file-thumb-wrap {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.file-thumb {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.2s ease !important;
+
+}
+
+
+
+/* Light theme adjustments */
+body[data-theme="light"] .file-thumb-wrap {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* File item adjustments for better layout with thumbnails */
+.file-item {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    transition: all 0.2s ease !important;
+    min-height: 56px !important;
+    max-width: 400px !important;
+}
+
+.file-item:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+body[data-theme="light"] .file-item {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body[data-theme="light"] .file-item:hover {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* File info alignment */
+.file-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.file-name {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 150px !important;
+}
+
+/* Remove button improvements */
+.remove-file {
+    opacity: 0.6 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.remove-file:hover {
+    opacity: 1 !important;
+}
+
+body[data-theme="light"] .remove-file {
+    filter: invert(1) !important;
+}
+
+/* Additional fixes for text colors */
+body[data-theme="light"] .file-name {
+    color: #1f2937 !important;
+}
+
+body[data-theme="light"] .file-size {
+    color: #6b7280 !important;
 }
 body[data-theme="light"] a{
     color: rgb(0, 0, 0);
