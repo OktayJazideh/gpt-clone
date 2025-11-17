@@ -1,3 +1,29 @@
+// Function to update model subtitle
+function updateModelSubtitle(modelName) {
+    const $subtitle = $('#modelSubtitle');
+    let subtitleText = '';
+    
+    switch(modelName) {
+        case 'GapGPT-5':
+            subtitleText = 'هم اکنون قدرت گرفته از GapGPT-5 با دسترسی به اینترنت و تولید عکس';
+            break;
+        case 'GapGPT-5 Lite':
+            subtitleText = ''; // No text for Lite version
+            break;
+        case 'مدل‌های دیگر':
+            subtitleText = 'هم اکنون قدرت گرفته از مدل‌های پیشرفته - پلاس و پرو';
+            break;
+        default:
+            subtitleText = `هم اکنون قدرت گرفته از ${modelName}`;
+    }
+    
+    if (subtitleText) {
+        $subtitle.text(subtitleText).show();
+    } else {
+        $subtitle.hide();
+    }
+}
+
 $(document).ready(function() {
     let attachedFiles = [];
     let currentChatId = null;
@@ -6,24 +32,84 @@ $(document).ready(function() {
     // استفاده از chatHistoryManager جدید
     const chatManager = window.chatHistoryManager;
     
+    // Initialize model subtitle with current selected model
+    const currentModel = $('.model-selector .model').text() || 'GapGPT-5 Lite';
+    updateModelSubtitle(currentModel);
+    
     // ابزارهای کمکی نمایش چیپس‌ها
     function hideChips() {
+        console.log('🔍 تابع hideChips فراخوانی شد');
         const startupFeatures = document.querySelector('.startup-features');
         const mobileChips = document.querySelector('.mobile-chips');
-        if (startupFeatures) startupFeatures.style.setProperty('display', 'none', 'important');
-        if (mobileChips) mobileChips.style.setProperty('display', 'none', 'important');
+        console.log('🔍 startupFeatures found:', !!startupFeatures);
+        console.log('🔍 mobileChips found:', !!mobileChips);
+        
+        if (startupFeatures) {
+            startupFeatures.classList.add('chips-hidden');
+            // استفاده از inline style برای اولویت بالاتر
+            startupFeatures.style.setProperty('display', 'none', 'important');
+            console.log('🔍 startup-features مخفی شد با inline style');
+        }
+        if (mobileChips) {
+            mobileChips.classList.add('chips-hidden');
+            // استفاده از inline style برای اولویت بالاتر
+            mobileChips.style.setProperty('display', 'none', 'important');
+            console.log('🔍 mobile-chips مخفی شد با inline style');
+        }
+    }
+    
+    function showChips() {
+        console.log('🔍 تابع showChips فراخوانی شد');
+        const startupFeatures = document.querySelector('.startup-features');
+        const mobileChips = document.querySelector('.mobile-chips');
+        
+        if (startupFeatures) {
+            startupFeatures.classList.remove('chips-hidden');
+            // پاک کردن inline style قبلی و تنظیم جدید
+            startupFeatures.style.removeProperty('display');
+            startupFeatures.style.setProperty('display', 'flex', 'important');
+            console.log('🔍 startup-features نمایش داده شد');
+        }
+        if (mobileChips) {
+            mobileChips.classList.remove('chips-hidden');
+            // پاک کردن inline style قبلی
+            mobileChips.style.removeProperty('display');
+            console.log('🔍 mobile-chips نمایش داده شد');
+        }
+        
+        // آپدیت نمایش بر اساس viewport
+        showChipsBasedOnViewport();
     }
 
     function showChipsBasedOnViewport() {
         const startupFeatures = document.querySelector('.startup-features');
         const mobileChips = document.querySelector('.mobile-chips');
         const isMobile = window.innerWidth <= 768;
+        
+        // اگر چیپس‌ها مخفی شده باشند، نمایش نده
+        if (startupFeatures && startupFeatures.classList.contains('chips-hidden')) {
+            return;
+        }
+        if (mobileChips && mobileChips.classList.contains('chips-hidden')) {
+            return;
+        }
+        
         if (isMobile) {
             if (startupFeatures) startupFeatures.style.setProperty('display', 'none', 'important');
             if (mobileChips) mobileChips.style.setProperty('display', 'block', 'important');
         } else {
-            if (startupFeatures) startupFeatures.style.setProperty('display', 'flex', 'important');
-            if (mobileChips) mobileChips.style.setProperty('display', 'none', 'important');
+            if (startupFeatures) {
+                // فقط اگر مخفی نشده باشد، نمایش بده
+                if (!startupFeatures.classList.contains('chips-hidden')) {
+                    startupFeatures.style.setProperty('display', 'flex', 'important');
+                }
+            }
+            if (mobileChips) {
+                // فقط اگر مخفی نشده باشد، نمایش بده
+                if (!mobileChips.classList.contains('chips-hidden')) {
+                    mobileChips.style.setProperty('display', 'none', 'important');
+                }
+            }
         }
     }
 
@@ -363,7 +449,7 @@ $(document).ready(function() {
             
             const startupHeader = document.querySelector('.startup-header');
             if (startupHeader) startupHeader.style.removeProperty('display');
-            showChipsBasedOnViewport();
+            showChips();
             
             $('#chatMessagesContainer').hide();
             
@@ -387,6 +473,9 @@ $(document).ready(function() {
                     'max-width': '',
                     'margin': ''
                 });
+            
+            // اگر چتی وجود ندارد، isFirstMessage باید true باشد
+            isFirstMessage = true;
         } else {
             // اگر چت داریم، هدر و چیپس‌ها رو مخفی کن و چت رو نشون بده
             const startupHeader = document.querySelector('.startup-header');
@@ -416,6 +505,9 @@ $(document).ready(function() {
                     'max-width': '900px',
                     'margin': '0 auto'
                 });
+            
+            // اگر چت داریم، isFirstMessage باید false باشد تا چت جدید ساخته نشود
+            isFirstMessage = false;
         }
         
         console.log('❌ حالت چت صوتی غیرفعال شد');
@@ -1444,6 +1536,90 @@ $(document).ready(function() {
     
     $('.temp-chat-trigger').on('click', function(e) {
         e.stopPropagation();
+        
+        // بررسی اینکه آیا واقعاً در صفحه چت هستیم (چت container نمایش داده شده)
+        const isInChatInterface = $('#chatMessagesContainer').is(':visible');
+        const hasActiveChat = currentChatId && chatManager.getChatById(currentChatId) && 
+                             chatManager.getChatById(currentChatId).messages.length > 0;
+        
+        console.log('🔍 وضعیت temp chat button:');
+        console.log('🔍 isInChatInterface:', isInChatInterface);
+        console.log('🔍 hasActiveChat:', hasActiveChat);
+        console.log('🔍 currentChatId:', currentChatId);
+        
+        if (isInChatInterface && hasActiveChat) {
+            // We're in chat interface - go to temp chat mode
+            console.log('🔍 در صفحه چت هستیم - رفتن به حالت چت موقت');
+            
+            // بازگشت به صفحه اصلی
+            currentChatId = null;
+            isFirstMessage = true;
+            
+            // مخفی کردن دکمه share
+            $('#shareBtn').hide();
+            
+            // مخفی کردن container پیام‌ها
+            $('#chatMessagesContainer').hide().empty();
+            
+            // نمایش startup container
+            $('.startup-container').show();
+            
+            // نمایش هدر
+            const startupHeader = document.querySelector('.startup-header');
+            if (startupHeader) {
+                startupHeader.style.removeProperty('display');
+            }
+            
+            // نمایش چیپس‌ها
+            showChips();
+            
+            // ریست کردن استایل‌های startup container
+            $('.startup-container')
+                .removeClass('chat-input-footer')
+                .css({
+                    'position': '',
+                    'bottom': '',
+                    'right': '',
+                    'left': '',
+                    'max-width': '',
+                    'margin': '',
+                    'padding': '',
+                    'z-index': ''
+                });
+            
+            $('.input-suggestions-container').css({
+                'max-width': '',
+                'margin': ''
+            });
+            
+            // فعال کردن حالت چت موقت
+            isTempChatActive = true;
+            
+            // اکتیو کردن دکمه
+            $(this).css({
+                'background-color': 'rgba(97, 94, 235, 0.2)',
+                'color': 'rgb(97, 94, 235)',
+                'border-radius': '50%',
+                'padding': '8px'
+            });
+            
+            // تغییر عنوان
+            $('#mainTitle').text('گفت‌و‌گوی موقت');
+            
+            // نمایش توضیحات
+            $('#tempChatDescription').fadeIn(300);
+            
+            // مخفی کردن چیپس‌ها برای حالت موقت
+            hideChips();
+            
+            // پاک کردن textarea
+            $('#chatTextarea').val('');
+            
+            return;
+        }
+        
+        // We're on main page - toggle temp chat mode
+        console.log('🔍 در صفحه اصلی هستیم - تغییر حالت چت موقت');
         isTempChatActive = !isTempChatActive;
         
         if (isTempChatActive) {
@@ -1483,6 +1659,24 @@ $(document).ready(function() {
             $('.mobile-chips').removeClass('hide-chips');
         }
     });
+    
+    // Function to create new chat with current model
+    function createNewChatWithCurrentModel() {
+        // Get current selected model
+        const currentModel = $('.model-selector .model').text() || 'GapGPT-5 Lite';
+        
+        // Create new chat
+        const newChat = createNewChat('');
+        if (!newChat) {
+            console.error('خطا در ساخت چت جدید');
+            return;
+        }
+        
+        console.log(`چت جدید با مدل ${currentModel} ایجاد شد`);
+        
+        // Update model subtitle for the new chat
+        updateModelSubtitle(currentModel);
+    }
     
     // Toggle between voice/soundwave and send button based on input
     $('#chatTextarea').on('input', function() {
@@ -1531,8 +1725,17 @@ $(document).ready(function() {
             console.log('پیام:', message);
             console.log('فایل‌های پیوست:', attachedFiles);
             
-            // اگر اولین پیام است
-            if (isFirstMessage) {
+            // بررسی اینکه آیا چت فعالی وجود دارد یا نه
+            const hasActiveChat = currentChatId && chatManager.getChatById(currentChatId) && 
+                                 chatManager.getChatById(currentChatId).messages.length > 0;
+            
+            console.log('🔍 وضعیت isFirstMessage در شروع sendMessage:', isFirstMessage);
+            console.log('🔍 وضعیت hasActiveChat:', hasActiveChat);
+            console.log('🔍 currentChatId:', currentChatId);
+            
+            // اگر اولین پیام است یا چت فعالی وجود ندارد
+            if (isFirstMessage || !hasActiveChat) {
+                console.log('🔍 اولین پیام است یا چت فعالی وجود ندارد - در حال ایجاد چت جدید و مخفی کردن چیپس‌ها');
                 // ایجاد چت جدید
                 createNewChat(message);
                 
@@ -1572,9 +1775,6 @@ $(document).ready(function() {
                 
                 // به‌روزرسانی هیستوری
                 renderChatHistory();
-                
-                // آپدیت وضعیت چیپس‌ها
-                updateChipsVisibility();
                 
                 // نمایش دکمه اشتراک‌گذاری
                 $('#shareBtn').fadeIn(300);
@@ -2113,16 +2313,8 @@ $(document).ready(function() {
             startupHeader.style.removeProperty('display');
         }
         
-        const startupFeatures = document.querySelector('.startup-features');
-        if (startupFeatures) {
-            // اطمینان از نمایش چیپس‌ها
-            startupFeatures.style.setProperty('display', 'flex', 'important');
-        }
-        
-        const mobileChips = document.querySelector('.mobile-chips');
-        if (mobileChips) {
-            mobileChips.style.setProperty('display', 'block', 'important');
-        }
+        // نمایش چیپس‌ها
+        showChips();
         
         // ریست کردن استایل‌های startup container به حالت اولیه
         $('.startup-container')
@@ -2287,6 +2479,9 @@ $(document).ready(function() {
         // Update selected model text
         const modelName = $(this).find('.fw-bold').first().text();
         $('.model-selector .model').text(modelName);
+        
+        // Update model subtitle with appropriate message
+        updateModelSubtitle(modelName);
         
         // Close menu
         $('#modelMenu').removeClass('show');
